@@ -1,6 +1,7 @@
 ﻿using App.Server.Data;
 using App.Server.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Entity;
 
 namespace App.Server.Controllers
 {
@@ -34,6 +35,12 @@ namespace App.Server.Controllers
             _context.PersonRecords.Add(personRecord);
             await _context.SaveChangesAsync();
             return Ok(personRecord);
+        }
+
+        [HttpGet("GetAll")]
+        public async Task<List<PersonRecord>> Get() 
+        {
+            return await _context.PersonRecords.ToListAsync();
         }
     }
 }

@@ -1,39 +1,20 @@
 import type React from "react";
 import { API_BASE_URL } from "../constants/constants";
+import { addPersonRecord } from "../api/personRecordApi";
 
 const AddPersonPage = () => {
 
     const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Convert empty strings to null
-        const formData = collectFormData(e.currentTarget);
-        const cleanData: { [key: string]: any } = { ...formData };
-
-        Object.keys(cleanData).forEach((key) => {
-            if (cleanData[key] === "") cleanData[key] = null;
-        });
-
-        fetch(`${API_BASE_URL}/personrecord/Create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cleanData)
-        }).then(res => {
-            if (!res.ok) {
-                return res.json().then(err => {
-                    throw new Error(err.message || "Server Error");
-                });
-            }
-            return res.json();
-        }).then(data => {
-            const form = document.getElementById("AddPersonForm");
-            form.reset();
-        }).catch(err => {
-            console.error("Network or unexpected error:", err);
-            console.log(`${API_BASE_URL}/personrecord/Create`);
-        });
+        const form = document.getElementById("AddPersonForm") as HTMLFormElement;
+        const formData = collectFormData(form);
+        addPersonRecord(formData)
+            .then(data => {
+                form.reset();
+            }).catch(err => {
+                console.error("Failed to submit person record:", err);
+            })
     }
 
     const collectFormData = (form: HTMLFormElement) => {
