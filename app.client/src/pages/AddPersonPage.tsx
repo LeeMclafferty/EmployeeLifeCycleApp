@@ -1,16 +1,28 @@
 import type React from "react";
+import { API_BASE_URL } from "../constants/constants";
 
 const AddPersonPage = () => {
 
     const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        fetch('http://localhost:7034/api/PersonRecord/Create', {
+        fetch(`${API_BASE_URL}PersonRecord/Create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(collectFormData(e.currentTarget))
-        })
+        }).then(res => {
+            if (!res.ok) {
+                return res.json().then(err => {
+                    throw new Error(err.message || "Server Error");
+                });
+            }
+            return res.json();
+        }).then(data => {
+            e.currentTarget.reset();
+        }).catch(err => {
+            console.error("Network or unexpected error:", err);
+        });
     }
 
     const collectFormData = (form: HTMLFormElement) => {
@@ -19,7 +31,7 @@ const AddPersonPage = () => {
             middleName: (form.elements.namedItem("MiddleName") as HTMLInputElement)?.value,
             lastName: (form.elements.namedItem("LastName") as HTMLInputElement)?.value,
             preferredName: (form.elements.namedItem("PreferredName") as HTMLInputElement)?.value,
-            Intials: (form.elements.namedItem("Intials") as HTMLInputElement)?.value,
+            initials: (form.elements.namedItem("Initials") as HTMLInputElement)?.value,
             startDate: (form.elements.namedItem("StartDate") as HTMLInputElement)?.value,
             phoneNumber: (form.elements.namedItem("PhoneNumber") as HTMLInputElement)?.value,
             deskNumber: (form.elements.namedItem("DeskNumber") as HTMLInputElement)?.value,
@@ -55,7 +67,7 @@ const AddPersonPage = () => {
         </label>
         <label>
             initials:
-            <input type="text" name="initials" />
+            <input type="text" name="Initials" />
         </label>
         <label>
             Start Date:
