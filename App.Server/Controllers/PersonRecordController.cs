@@ -17,6 +17,20 @@ namespace App.Server.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(PersonRecord personRecord)
         {
+            if (!ModelState.IsValid)
+            {
+                // Log each error to the console
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"Model error in '{entry.Key}': {error.ErrorMessage}");
+                    }
+                }
+
+                return BadRequest(ModelState);
+            }
+
             _context.PersonRecords.Add(personRecord);
             await _context.SaveChangesAsync();
             return Ok(personRecord);

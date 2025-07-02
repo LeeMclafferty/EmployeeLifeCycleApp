@@ -5,12 +5,21 @@ const AddPersonPage = () => {
 
     const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        fetch(`${API_BASE_URL}PersonRecord/Create`, {
+
+        // Convert empty strings to null
+        const formData = collectFormData(e.currentTarget);
+        const cleanData: { [key: string]: any } = { ...formData };
+
+        Object.keys(cleanData).forEach((key) => {
+            if (cleanData[key] === "") cleanData[key] = null;
+        });
+
+        fetch(`${API_BASE_URL}/personrecord/Create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(collectFormData(e.currentTarget))
+            body: JSON.stringify(cleanData)
         }).then(res => {
             if (!res.ok) {
                 return res.json().then(err => {
@@ -19,9 +28,11 @@ const AddPersonPage = () => {
             }
             return res.json();
         }).then(data => {
-            e.currentTarget.reset();
+            const form = document.getElementById("AddPersonForm");
+            form.reset();
         }).catch(err => {
             console.error("Network or unexpected error:", err);
+            console.log(`${API_BASE_URL}/personrecord/Create`);
         });
     }
 
@@ -48,7 +59,7 @@ const AddPersonPage = () => {
     return (
       <>
       <h2>Add Person Page</h2>
-            <form onSubmit={handleSubmit}>
+            <form id="AddPersonForm" onSubmit={handleSubmit}>
         <label>
             First Name:
             <input type="text" name="FirstName" />

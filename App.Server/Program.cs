@@ -17,6 +17,7 @@ namespace App.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // DB Connection String
             var connectionString =
                 builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection String"
@@ -25,8 +26,25 @@ namespace App.Server
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(connectionString));
 
+            // Allow list for CORS
+            var allowedOrigins = new[]
+            {
+                "https://localhost:49866"
+            };
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowPolicy", policy =>
+                {
+                    policy.WithOrigins(allowedOrigins)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
 
+            app.UseCors("AllowPolicy");
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
