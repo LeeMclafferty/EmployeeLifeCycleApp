@@ -1,7 +1,24 @@
 import { API_BASE_URL } from "../constants/constants";
 
-export const getPersonRecords = () => {
-    
+export const getPersonRecords = async () => {
+    try {
+        const res = await fetch(`${API_BASE_URL}/personrecord/GetAll`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || "Server Error");
+        }
+
+        return await res.json();
+    } catch (err) {
+        console.error("Network or unexpected error:", err);
+        throw err; // bubble up so the component can handle it
+    }
 }
 
 export const addPersonRecord = async (personData: Record<string, any>) => {
