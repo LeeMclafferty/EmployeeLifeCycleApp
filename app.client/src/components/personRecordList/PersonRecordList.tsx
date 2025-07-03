@@ -28,32 +28,24 @@ const PersonRecordList = () => {
         }));
     }
 
-    const getDisplayName = (person: any) => {
-        let first: string = "";
-        let last: string = "";
+    const getDisplayName = (person: any): string => {
         if (person.preferredName) {
-            // if preferredName has spaces, hinting at first and last name.
-            if (person.preferredName.includes(" ")) {
-                const names = person.preferredName.split(" ");
-                if (names) {
-                    first = names[0];
-                    for (let i = 1; i < names.length; i++) {
-                        if (i == 1) {
-                            last += names[i];
-                            continue;
-                        }
-                        last += (" " + names[i]);
-                    }
-                    return first + " " + last;
-                }
+            const parts = person.preferredName.trim().split(/\s+/);
+
+            // If preferredName is a full name
+            if (parts.length > 1) {
+                const first = parts[0];
+                const last = parts.slice(1).join(" ");
+                return `${first} ${last}`;
             }
-            else {
-                return person.preferredName + " " + person.lastName;
-            }
-        } else {
-            return person.firstName + " " + person.lastName;
+
+            // If preferredName is just a first name
+            return `${person.preferredName} ${person.lastName ?? ""}`;
         }
-    }
+
+        return `${person.firstName ?? ""} ${person.lastName ?? ""}`;
+    };
+
 
     return (
         <>

@@ -37,10 +37,42 @@ namespace App.Server.Controllers
             return Ok(personRecord);
         }
 
-        [HttpGet("GetAll")]
-        public async Task<List<PersonRecord>> Get() 
+        [HttpGet("Get")]
+        public async Task<List<PersonRecord>> GetAll() 
         {
             return await _context.PersonRecords.ToListAsync();
+        }
+
+        [HttpGet("Get/{id}")]
+        public async Task<ActionResult<PersonRecord>> GetById(int id)
+        {
+            var person = await _context.PersonRecords.FindAsync(id);
+            if (person == null)
+                return NotFound();
+
+            return person;
+        }
+
+        [HttpPut("Update")]
+        public async Task<ActionResult> Update(PersonRecord personRecord)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Log each error to the console
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"Model error in '{entry.Key}': {error.ErrorMessage}");
+                    }
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            _context.Update(personRecord);
+            await _context.SaveChangesAsync();
+            return Ok(personRecord);
         }
     }
 }
