@@ -4,7 +4,7 @@ namespace App.Server.Models
 {
     public class PersonRecord
     {
-        [Required, Key]
+        [Key]
         public int Id { get; set; }
         [Required]
         public string? FirstName { get; set; }
@@ -17,8 +17,6 @@ namespace App.Server.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         
-        [Required(ErrorMessage = "You must provide a phone number in the format xxx-xxx-xxxx")]
-        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid phone number")]
         public string? PhoneNumber { get; set; }
         public int? DeskNumber { get; set; }
         public string? EmailAddress { get; set; }

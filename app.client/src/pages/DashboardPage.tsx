@@ -3,7 +3,7 @@ import PersonRecordList from "../components/personRecordList/PersonRecordList";
 const DashboardPage =() => {
     return (
     <>
-        <p>Dashboard Page</p>
+        <h2>Dashboard Page</h2>
         <PersonRecordList/>
     </>
   );

@@ -1,6 +1,10 @@
 const EditPersonPage = () => {
-  return (
-    <p>Edit Person Page</p>
+    return (
+    <>
+        <h2>Edit Person Page</h2>
+            <form>
+            </form>
+    </>
   );
 }
 

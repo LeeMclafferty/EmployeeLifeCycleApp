@@ -1,4 +1,3 @@
-import { json } from "node:stream/consumers";
 import { API_BASE_URL } from "../constants/constants";
 import type { PersonRecord } from "../types/PersonRecord";
 
@@ -23,13 +22,8 @@ export const getPersonRecords = async () => {
     }
 }
 
-export const addPersonRecord = async (personData: Record<string, any>) => {
-    // Convert empty strings to null
-    const cleanData: Record<string, any> = { ...personData };
-
-    Object.keys(cleanData).forEach((key) => {
-        if (cleanData[key] === "") cleanData[key] = null;
-    });
+export const addPersonRecord = async (personData: PersonRecord) => {
+    console.log("Sending PersonRecord:", JSON.stringify(personData));
 
     try {
         const res = await fetch(`${API_BASE_URL}/personrecord/Create`, {
@@ -37,7 +31,7 @@ export const addPersonRecord = async (personData: Record<string, any>) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(cleanData)
+            body: JSON.stringify(personData)
         });
 
         if (!res.ok) {

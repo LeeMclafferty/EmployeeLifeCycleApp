@@ -1,7 +1,7 @@
 
 // This type should mirror PersonRecord on backend
 export type PersonRecord = {
-    id: number,
+    id?: number,
     firstName: string | null,
     middleName: string | null,
     lastName: string | null,
