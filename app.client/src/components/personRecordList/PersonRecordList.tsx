@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getPersonRecords } from "../../api/personRecordApi";
 import type { PersonRecord } from "../../types/PersonRecord";
+import { getDisplayName } from "../../helpers/formattingHelpers";
 
 const PersonRecordList = () => {
     const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
@@ -19,33 +20,20 @@ const PersonRecordList = () => {
         return firstChar + slicedFirstChar;;
     }
 
-    const formatPersonData = (people: PersonRecord[]) => {
+    /*const formatPersonData = (people: PersonRecord[]) => {
         return people.map(person => ({
             ...person,
             startDate: person.startDate ? new Date(person.startDate).toLocaleDateString() : "",
             endDate: person.endDate ? new Date(person.endDate).toLocaleDateString() : "",
             isFullyRemote: person.isFullyRemote ? "Remote" : "In Office"
         }));
-    }
+    }*/
 
-    const getDisplayName = (person: any): string => {
-        if (person.preferredName) {
-            const parts = person.preferredName.trim().split(/\s+/);
-
-            // If preferredName is a full name
-            if (parts.length > 1) {
-                const first = parts[0];
-                const last = parts.slice(1).join(" ");
-                return `${first} ${last}`;
-            }
-
-            // If preferredName is just a first name
-            return `${person.preferredName} ${person.lastName ?? ""}`;
-        }
-
-        return `${person.firstName ?? ""} ${person.lastName ?? ""}`;
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US"); // MM/DD/YYYY
     };
-
 
     return (
         <>
@@ -65,7 +53,7 @@ const PersonRecordList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {formatPersonData(personRecords).map((person, i) => (
+                    {personRecords.map((person, i) => (
                         <tr key={i}>
                             <td>
                                 <a href={`/viewperson/${person.id}`}>
@@ -77,7 +65,12 @@ const PersonRecordList = () => {
                                 .map((key) => (
                                 <td key={key}>
                                     {
-                                        person[key as keyof typeof person]?.toString()
+                                        key === "startDate" || key === "endDate"
+                                            ? formatDate(person[key as keyof typeof person] as string)
+                                            : key === "isFullyRemote"
+                                                ? person.isFullyRemote ? "Remote" : "In Office"
+                                                : person[key as keyof typeof person]?.toString()
+
                                     }
                                 </td>
                             ))}

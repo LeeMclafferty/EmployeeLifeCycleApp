@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getPersonRecordById } from "../api/personRecordApi";
 import type { PersonRecord } from "../types/PersonRecord";
+import ViewPersonRecord from '../components/ViewPersonRecord/ViewPersonRecord';
 
 const ViewPersonPage = () => {
     const { personId } = useParams();
@@ -21,11 +22,20 @@ const ViewPersonPage = () => {
         }
     }, [personId]);
 
-  return (
+    if(!personRecord) {
+        return(
+            <p>Unable to load the person from the server.</p>
+        );
+    }
+
+    return (
         <>
             <h2>View Person Page</h2>
+            <ViewPersonRecord
+                person={ personRecord }
+            />
         </>
-  );
+    );
 }
 
 export default ViewPersonPage;
