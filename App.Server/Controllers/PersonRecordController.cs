@@ -48,9 +48,9 @@ namespace App.Server.Controllers
         {
             var person = await _context.PersonRecords.FindAsync(id);
             if (person == null)
-                return NotFound();
+                return NotFound(new { message = "Person not found" });
 
-            return person;
+            return Ok(person);
         }
 
         [HttpPut("Update")]

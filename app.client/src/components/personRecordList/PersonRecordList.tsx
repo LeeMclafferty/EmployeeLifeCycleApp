@@ -68,7 +68,7 @@ const PersonRecordList = () => {
                     {formatPersonData(personRecords).map((person, i) => (
                         <tr key={i}>
                             <td>
-                                <a href={`/editperson/${person.id}`}>
+                                <a href={`/viewperson/${person.id}`}>
                                     {getDisplayName(person)}
                                 </a>
                             </td>

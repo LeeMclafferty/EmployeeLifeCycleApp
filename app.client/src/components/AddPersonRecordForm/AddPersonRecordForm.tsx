@@ -1,6 +1,5 @@
 import type React from "react";
-import { API_BASE_URL } from "../../constants/constants";
-import { addPersonRecord } from "../../api/personRecordApi";
+import { createPersonRecord } from "../../api/personRecordApi";
 import type { PersonRecord } from "../../types/PersonRecord";
 
 const AddPersonRecordForm = () => {
@@ -10,8 +9,8 @@ const AddPersonRecordForm = () => {
 
         const form = document.getElementById("AddPersonForm") as HTMLFormElement;
         const formData = collectFormData(form);
-        addPersonRecord(formData)
-            .then(data => {
+        createPersonRecord(formData)
+            .then( () => {
                 form.reset();
             }).catch(err => {
                 console.error("Failed to submit person record:", err);
@@ -20,7 +19,6 @@ const AddPersonRecordForm = () => {
 
     const collectFormData = (form: HTMLFormElement) => {
         const deskRaw:string = (form.elements.namedItem("DeskNumber") as HTMLInputElement)?.value;
-        const startDayRaw: string = (form.elements.namedItem("StartDate") as HTMLInputElement)?.value;
 
         const personRecord: PersonRecord = {
             firstName: (form.elements.namedItem("FirstName") as HTMLInputElement)?.value,
@@ -28,7 +26,7 @@ const AddPersonRecordForm = () => {
             lastName: (form.elements.namedItem("LastName") as HTMLInputElement)?.value,
             preferredName: (form.elements.namedItem("PreferredName") as HTMLInputElement)?.value,
             initials: (form.elements.namedItem("Initials") as HTMLInputElement)?.value,
-            startDate: startDayRaw === "" ? null : new Date(startDayRaw),
+            startDate: (form.elements.namedItem("StartDate") as HTMLInputElement)?.value,
             endDate: null,
             phoneNumber: (form.elements.namedItem("PhoneNumber") as HTMLInputElement)?.value,
             deskNumber: deskRaw === "" ? null : Number(deskRaw),

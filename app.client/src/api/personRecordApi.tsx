@@ -22,7 +22,7 @@ export const getPersonRecords = async () => {
     }
 }
 
-export const addPersonRecord = async (personData: PersonRecord) => {
+export const createPersonRecord = async (personData: PersonRecord) => {
     console.log("Sending PersonRecord:", JSON.stringify(personData));
 
     try {
@@ -48,7 +48,7 @@ export const addPersonRecord = async (personData: PersonRecord) => {
 
 export const getPersonRecordById = async (id: number) => {
     try {
-        const res = await fetch(`${API_BASE_URL}/Get/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/personRecord/Get/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ export const getPersonRecordById = async (id: number) => {
 
 export const updatePersonRecord = async (person: PersonRecord) => {
     try {
-        const res = await fetch(`${API_BASE_URL}/Update`, {
+        const res = await fetch(`${API_BASE_URL}/personRecord/Update`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
