@@ -1,7 +1,9 @@
 const TaskPage = () => {
-  return (
-    <p>Task Page</p>
-  );
-}
+    return (
+        <>
+            <h2>Task Page</h2>
+        </>
+    );
+};
 
 export default TaskPage;

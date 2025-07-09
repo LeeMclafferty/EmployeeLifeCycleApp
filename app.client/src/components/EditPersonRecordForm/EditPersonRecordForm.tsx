@@ -1,4 +1,4 @@
-
+import { useNavigate } from "react-router-dom";
 import { updatePersonRecord } from "../../api/personRecordApi";
 import type { PersonRecord } from "../../types/PersonRecord";
 
@@ -8,12 +8,16 @@ type Props = {
 
 const EditPersonRecordForm = ({ person }: Props) => {
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const form = document.getElementById("EditPersonForm") as HTMLFormElement;
         const formData: PersonRecord = collectFormData(form);
         await updatePersonRecord(formData)
-            .catch(err => {
+            .then(() => {
+                navigate(`/ViewPerson/${person.id}`);
+            }).catch(err => {
                 console.log("Error while saving edits:", err);
             });
     }
