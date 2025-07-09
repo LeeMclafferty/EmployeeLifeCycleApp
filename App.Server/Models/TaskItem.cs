@@ -17,7 +17,6 @@ namespace App.Server.Models
         public string? Description { get; set; }
         public bool IsAutomated { get; set; }
         public int DepartmentId { get; set; }
-        public TimeSpan? OffsetFromStartDate { get; set; }
         public TaskPhase taskPhase { get; set; }
     }
 }
