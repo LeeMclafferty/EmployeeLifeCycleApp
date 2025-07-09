@@ -12,5 +12,7 @@ namespace App.Server.Data
         }
 
         public DbSet<PersonRecord> PersonRecords { get; set; }
+        public DbSet<TaskTemplate> TaskTemplates { get; set; }
+        public DbSet<AssignedTask> AssignedTask {  get; set; }
     }
 }

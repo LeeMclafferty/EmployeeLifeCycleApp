@@ -20,13 +20,15 @@ namespace App.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Log each error to the console
-                foreach (var entry in ModelState)
+                string message = string.Empty;
+                if (!ModelState.IsValid)
                 {
-                    foreach (var error in entry.Value.Errors)
+                    foreach (var entry in ModelState)
                     {
-                        Console.WriteLine($"Model error in '{entry.Key}': {error.ErrorMessage}");
+                        message += (entry.Key + ", ");
                     }
+                    message += "keys not valid.";
+                    return BadRequest(message);
                 }
 
                 return BadRequest(ModelState);
@@ -56,21 +58,18 @@ namespace App.Server.Controllers
         [HttpPut("Update")]
         public async Task<ActionResult> Update(PersonRecord personRecord)
         {
+            string message = string.Empty;
             if (!ModelState.IsValid)
             {
-                // Log each error to the console
                 foreach (var entry in ModelState)
                 {
-                    foreach (var error in entry.Value.Errors)
-                    {
-                        Console.WriteLine($"Model error in '{entry.Key}': {error.ErrorMessage}");
-                    }
+                    message += (entry.Key + ", ");
                 }
-
-                return BadRequest(ModelState);
+                message += "keys not valid.";
+                return BadRequest(message);
             }
 
-            _context.Update(personRecord);
+            _context.PersonRecords.Update(personRecord);
             await _context.SaveChangesAsync();
             return Ok(personRecord);
         }
