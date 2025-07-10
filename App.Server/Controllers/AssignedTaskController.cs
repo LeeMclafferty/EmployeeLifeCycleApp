@@ -36,6 +36,21 @@ namespace App.Server.Controllers
             return Ok(assignedTaskList);
         }
 
+        [HttpGet("ByNewHire/{id}")]
+        public async Task<ActionResult<List<AssignedTask>>> GetByNewHireId(int id)
+        {
+            var tasks = await _context.AssignedTask
+                .Include(t => t.TaskTemplate)
+                .Where(t => t.NewHireId == id)
+                .ToListAsync();
+
+            if (tasks.IsNullOrEmpty())
+                return NotFound("No assigned tasks found for this hire.");
+
+
+            return Ok(tasks);
+        }
+
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AssignedTask assignedTask)
         {

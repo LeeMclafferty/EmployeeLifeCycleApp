@@ -1,8 +1,6 @@
-// taskApi.ts
+import { AssignedTask, TaskTemplate } from "../types/Task";
 import { apiRequest } from "./ApiClient";
-import { TaskTemplate, AssignedTask } from "../types/TaskTypes";
 
-// taskApi.ts
 export const getTaskTemplates = () =>
     apiRequest<TaskTemplate[]>("TaskTemplate/Get");
 
@@ -26,3 +24,6 @@ export const createTaskTemplate = (data: TaskTemplate) =>
 
 export const createAssignedTask = (data: AssignedTask) =>
     apiRequest<AssignedTask, AssignedTask>("AssignedTask/Create", "POST", data);
+
+export const getAssignedTaskByNewHireId = (id: number) =>
+    apiRequest<AssignedTask[]>(`AssignedTask/ByNewHire/${id}`);
