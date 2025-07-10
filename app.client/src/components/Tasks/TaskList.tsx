@@ -15,7 +15,7 @@ type Props = {
 
 const TaskList = ({ personRecord }: Props) => {
     const [assignedTask, setAssignedTask] = useState<AssignedTask[]>([]);
-    console.log(personRecord);
+
     useEffect(() => {
         const fetchTasks = async () => {
             if (!personRecord.id) {

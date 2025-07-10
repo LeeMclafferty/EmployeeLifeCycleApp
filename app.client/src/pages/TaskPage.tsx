@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TaskList from "../components/Tasks/TaskList";
-import { type PersonRecord } from '../types/PersonRecordType';
+import { type PersonRecord } from "../types/PersonRecordType";
 import { getPersonRecordById } from "../api/personRecordApi";
 import { useParams } from "react-router-dom";
 
@@ -13,7 +13,6 @@ const TaskPage = () => {
             const loadPerson = async () => {
                 try {
                     const data = await getPersonRecordById(Number(personId));
-                    console.log(data);
                     setPersonRecord(data);
                 } catch (err) {
                     console.log("Failed to fetch person", err);
