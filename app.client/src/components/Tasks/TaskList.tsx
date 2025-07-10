@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { PersonRecord } from "../../types/PersonRecord";
-import { AssignedTask } from "../../types/TaskTemplate";
+import { type PersonRecord } from "../../types/PersonRecordType";
+import { type AssignedTask } from "../../types/TaskDataTypes";
 import { getAssignedTaskByNewHireId } from "../../api/TaskApi";
 
 // 5 of 8 completed
@@ -15,7 +15,7 @@ type Props = {
 
 const TaskList = ({ personRecord }: Props) => {
     const [assignedTask, setAssignedTask] = useState<AssignedTask[]>([]);
-
+    console.log(personRecord);
     useEffect(() => {
         const fetchTasks = async () => {
             if (!personRecord.id) {

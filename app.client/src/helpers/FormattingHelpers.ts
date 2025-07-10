@@ -1,4 +1,4 @@
-import type { PersonRecord } from "../types/PersonRecord";
+import { type PersonRecord } from '../types/PersonRecordType';
 
 // Returns the PersonRecords display name
 export const getDisplayName = (person: PersonRecord): string => {

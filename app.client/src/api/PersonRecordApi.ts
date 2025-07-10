@@ -1,5 +1,5 @@
 import { apiRequest } from "./ApiClient";
-import type { PersonRecord } from "../types/PersonRecord";
+import { type PersonRecord } from '../types/PersonRecordType';
 
 export const getPersonRecords = () =>
     apiRequest<PersonRecord[]>("PersonRecord/Get");

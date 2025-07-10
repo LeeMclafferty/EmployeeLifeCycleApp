@@ -1,4 +1,4 @@
-enum TaskPhase {
+export enum TaskPhase {
     Onboarding,
     Offboarding,
 }

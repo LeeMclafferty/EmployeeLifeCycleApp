@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getPersonRecordById } from "../api/personRecordApi";
-import type { PersonRecord } from "../types/PersonRecord";
+import { type PersonRecord } from '../types/PersonRecordType';
 import ViewPersonRecord from '../components/ViewPersonRecord/ViewPersonRecord';
 
 const ViewPersonPage = () => {

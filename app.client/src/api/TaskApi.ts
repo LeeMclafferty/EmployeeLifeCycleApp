@@ -1,5 +1,5 @@
-import { AssignedTask, TaskTemplate } from "../types/Task";
 import { apiRequest } from "./ApiClient";
+import { type TaskTemplate, type AssignedTask } from "../types/TaskDataTypes";
 
 export const getTaskTemplates = () =>
     apiRequest<TaskTemplate[]>("TaskTemplate/Get");

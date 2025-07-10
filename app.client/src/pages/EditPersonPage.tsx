@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import EditPersonRecordForm from "../components/EditPersonRecordForm/EditPersonRecordForm";
 import { useParams } from 'react-router-dom';
 import { getPersonRecordById } from "../api/personRecordApi";
-import type { PersonRecord } from "../types/PersonRecord";
+import { type PersonRecord } from '../types/PersonRecordType';
 
 const EditPersonPage = () => {
     const { personId } = useParams();
