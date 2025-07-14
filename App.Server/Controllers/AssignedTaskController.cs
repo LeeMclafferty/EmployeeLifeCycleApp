@@ -2,7 +2,7 @@
 using App.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.Server.Controllers
 {
@@ -11,7 +11,7 @@ namespace App.Server.Controllers
     public class AssignedTaskController : ControllerBase
     {
         private readonly AppDbContext _context;
-        AssignedTaskController(AppDbContext context)
+        public AssignedTaskController(AppDbContext context)
         {
             _context = context;
         }
@@ -37,19 +37,23 @@ namespace App.Server.Controllers
         }
 
         [HttpGet("ByNewHire/{id}")]
-        public async Task<ActionResult<List<AssignedTask>>> GetByNewHireId(int id)
+        public async Task<IActionResult> GetAssignedTasksByNewHire(int id)
         {
-            var tasks = await _context.AssignedTask
-                .Include(t => t.TaskTemplate)
-                .Where(t => t.NewHireId == id)
-                .ToListAsync();
+            try
+            {
+                var tasks = await _context.AssignedTask
+                    .Include(t => t.TaskTemplate)
+                    .Where(t => t.NewHireId == id)
+                    .ToListAsync();
 
-            if (tasks.IsNullOrEmpty())
-                return NotFound("No assigned tasks found for this hire.");
-
-
-            return Ok(tasks);
+                return Ok(tasks);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
         }
+
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AssignedTask assignedTask)
@@ -66,6 +70,25 @@ namespace App.Server.Controllers
             }
 
             _context.AssignedTask.Add(assignedTask);
+            await _context.SaveChangesAsync();
+            return Ok(assignedTask);
+        }
+
+        [HttpPut("Update")]
+        public async Task<ActionResult> Update(AssignedTask assignedTask)
+        {
+            string message = string.Empty;
+            if (!ModelState.IsValid)
+            {
+                foreach (var entry in ModelState)
+                {
+                    message += (entry.Key + ", ");
+                }
+                message += "keys not valid.";
+                return BadRequest(message);
+            }
+
+            _context.AssignedTask.Update(assignedTask);
             await _context.SaveChangesAsync();
             return Ok(assignedTask);
         }

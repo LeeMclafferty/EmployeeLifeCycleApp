@@ -1,0 +1,15 @@
+li {
+    list-style-type: none;
+}
+
+ul {
+    text-align: left;
+}
+
+meter::-webkit-meter-optimum-value {
+    background: Blue;
+}
+
+:checked {
+    accent-color: blue;
+}

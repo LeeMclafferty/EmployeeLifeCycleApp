@@ -5,8 +5,8 @@ namespace App.Server.Models
 
     public enum TaskPhase
     {
-        Onboarding,
-        Offboarding
+        Onboarding = 0,
+        Offboarding = 1
     }
 
     public class TaskTemplate

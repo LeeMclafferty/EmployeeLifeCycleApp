@@ -1,8 +1,8 @@
 ﻿using App.Server.Data;
 using App.Server.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Data.Entity;
 
 namespace App.Server.Controllers
 {
@@ -12,7 +12,7 @@ namespace App.Server.Controllers
     {
         private readonly AppDbContext _context;
 
-        TaskTemplateController(AppDbContext context) 
+        public TaskTemplateController(AppDbContext context) 
         {
             _context = context;
         }
