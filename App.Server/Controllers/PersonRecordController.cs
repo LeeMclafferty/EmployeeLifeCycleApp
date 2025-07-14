@@ -2,6 +2,7 @@
 using App.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static App.Server.Models.PersonRecord;
 
 namespace App.Server.Controllers
 {
@@ -53,6 +54,13 @@ namespace App.Server.Controllers
                 return NotFound(new { message = "Person not found" });
 
             return Ok(person);
+        }
+
+        [HttpGet("Phase")]
+        public async Task<ActionResult<List<PersonRecord>>> GetByPhase(LifeCyclePhase phase)
+        {
+            // Get all hires where entry.phase == phase
+            return Ok();
         }
 
         [HttpPut("Update")]

@@ -54,7 +54,6 @@ namespace App.Server.Controllers
             }
         }
 
-
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AssignedTask assignedTask)
         {
