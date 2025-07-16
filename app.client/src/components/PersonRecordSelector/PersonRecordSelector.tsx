@@ -51,18 +51,24 @@ const PersonRecordSelector = ({ person, phase }: Props) => {
                 {phasePersons.map((person) => (
                     <li key={person.id}>
                         {person.id === selectedPerson?.id ? (
-                            <PersonRecordCard person={person} isActive={true} />
+                            <div className="person-card">
+                                <PersonRecordCard
+                                    person={person}
+                                    isActive={true}
+                                />
+                            </div>
                         ) : (
-                            <PersonRecordCard
-                                person={person}
-                                isActive={false}
-                                onClick={() => handleCardClick(person)}
-                            />
+                            <div className="person-card">
+                                <PersonRecordCard
+                                    person={person}
+                                    isActive={false}
+                                    onClick={() => handleCardClick(person)}
+                                />
+                            </div>
                         )}
                     </li>
                 ))}
             </ul>
-            <div>{selectedPerson?.id}</div>
         </>
     );
 };

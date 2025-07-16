@@ -1,4 +1,5 @@
 import { type AssignedTask } from "../../types/TaskDataTypes";
+import "./TaskList.css";
 
 type Props = {
     assignedTask: AssignedTask[];
@@ -9,10 +10,10 @@ const TaskProgress = ({ assignedTask }: Props) => {
 
     return (
         <>
-            <label>{`${completed} of ${total} completed`}</label>
-            <div>
+            <label id="progress-text">{`${completed} of ${total} completed`}</label>
+            <div id="progress-bar">
                 <meter
-                    id="taskProgress"
+                    id="task-progress"
                     value={completed}
                     min="0"
                     max={total}

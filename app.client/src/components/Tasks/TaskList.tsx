@@ -64,27 +64,33 @@ const TaskList = ({ personRecord }: Props) => {
 
     return (
         <>
-            <PersonRecordSelector
-                person={personRecord}
-                phase={LifeCyclePhase.Onboarding}
-            />
-            <TaskProgress assignedTask={assignedTask} />
-            <ul>
-                {assignedTask.map((task) => (
-                    <li key={task.id}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={task.isComplete}
-                                onChange={(event) =>
-                                    onTaskCheckboxChange(event, task)
-                                }
-                            />
-                            <span>{task.taskTemplate?.title}</span>
-                        </label>
-                    </li>
-                ))}
-            </ul>
+            <div className="task-layout">
+                <div className="person-list">
+                    <PersonRecordSelector
+                        person={personRecord}
+                        phase={LifeCyclePhase.Onboarding}
+                    />
+                </div>
+                <div className="task-list">
+                    <TaskProgress assignedTask={assignedTask} />
+                    <ul>
+                        {assignedTask.map((task) => (
+                            <li key={task.id}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={task.isComplete}
+                                        onChange={(event) =>
+                                            onTaskCheckboxChange(event, task)
+                                        }
+                                    />
+                                    <span>{task.taskTemplate?.title}</span>
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </>
     );
 };

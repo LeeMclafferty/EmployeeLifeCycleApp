@@ -23,16 +23,36 @@ const PersonRecordCard = ({ person, isActive, onClick }: Props) => {
                     src={placeholder}
                 />
                 <div id="person-info">
-                    <div>{getDisplayName(person)}</div>
-                    <div>Start date: {formatDate(person.startDate || "")}</div>
-                    <div>Department: {person.department}</div>
+                    <div id="display-name">{getDisplayName(person)}</div>
+                    {isActive ? (
+                        <div className="record-info">
+                            Initials: {person.initials}
+                        </div>
+                    ) : null}
+                    <div className="record-info">
+                        Start date: {formatDate(person.startDate || "")}
+                    </div>
+                    <div className="record-info">
+                        Department: {person.department}
+                    </div>
+                    {isActive ? (
+                        <div className="record-info">
+                            Job Title: {person.jobTitle}
+                        </div>
+                    ) : null}
+                    {isActive ? (
+                        <div className="record-info">
+                            Desk: {person.deskNumber}
+                        </div>
+                    ) : null}
+                    {/*Want to come back and make this a nested check to display "remote" if is remote.*/}
+                    {isActive ? (
+                        <div className="record-info">
+                            Ext: {person.phoneNumber}
+                        </div>
+                    ) : null}
+                    {/*Later want to be able to display a "Team" if applicable*/}
                 </div>
-                {/* When user is selected, expand card to display more data
-                - Intials
-                - Job Title
-                - Desk Number
-                - Tax Team / CAAS Vertical
-                */}
             </div>
         </>
     );

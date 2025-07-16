@@ -23,3 +23,15 @@
 #person-info {
     text-align: left;
 }
+
+.person-card {
+    padding-bottom: 5px;
+}
+
+#display-name {
+    font-weight: bold;
+}
+
+.record-info {
+    font-weight: lighter;
+}

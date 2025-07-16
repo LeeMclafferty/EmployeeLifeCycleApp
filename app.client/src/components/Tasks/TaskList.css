@@ -1,15 +1,36 @@
-li {
-    list-style-type: none;
+ul {
+    list-style-position: inside; /* or use 'outside' if preferred */
+    padding-left: 0;
+    margin-left: 0;
 }
 
-ul {
-    text-align: left;
+li {
+    list-style-type: none;
 }
 
 meter::-webkit-meter-optimum-value {
     background: royalblue;
 }
 
+#task-progress {
+    width: 300px;
+}
+
 :checked {
     accent-color: royalblue;
+}
+
+.task-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.person-list {
+    width: 400px;
+}
+
+.task-list {
+    flex: 1;
+    text-align: start;
 }
