@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { type PersonRecord } from "../../types/PersonRecordType";
+import {
+    LifeCyclePhase,
+    type PersonRecord,
+} from "../../types/PersonRecordType";
 import { type AssignedTask } from "../../types/TaskDataTypes";
 import {
     getAssignedTaskByNewHireId,
@@ -7,6 +10,7 @@ import {
 } from "../../api/TaskApi";
 import "./Tasklist.css";
 import TaskProgress from "./TaskProgres";
+import PersonRecordSelector from "../PersonRecordSelector/PersonRecordSelector";
 
 // 5 of 8 completed
 // progress bar
@@ -37,7 +41,7 @@ const TaskList = ({ personRecord }: Props) => {
         };
 
         fetchTasks();
-    }, [personRecord.id, assignedTask]);
+    }, [personRecord.id]);
 
     const onTaskCheckboxChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -60,6 +64,10 @@ const TaskList = ({ personRecord }: Props) => {
 
     return (
         <>
+            <PersonRecordSelector
+                person={personRecord}
+                phase={LifeCyclePhase.Onboarding}
+            />
             <TaskProgress assignedTask={assignedTask} />
             <ul>
                 {assignedTask.map((task) => (

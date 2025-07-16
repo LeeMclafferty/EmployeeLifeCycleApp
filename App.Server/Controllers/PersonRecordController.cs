@@ -59,8 +59,18 @@ namespace App.Server.Controllers
         [HttpGet("Phase")]
         public async Task<ActionResult<List<PersonRecord>>> GetByPhase(LifeCyclePhase phase)
         {
-            // Get all hires where entry.phase == phase
-            return Ok();
+            try
+            {
+                var records = await _context.PersonRecords
+                    .Where(t => t.Phase == phase)
+                    .ToListAsync();
+
+                return Ok(records);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
         }
 
         [HttpPut("Update")]

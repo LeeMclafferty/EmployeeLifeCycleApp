@@ -1,5 +1,5 @@
 import { apiRequest } from "./ApiClient";
-import { type PersonRecord } from '../types/PersonRecordType';
+import { LifeCyclePhase, type PersonRecord } from "../types/PersonRecordType";
 
 export const getPersonRecords = () =>
     apiRequest<PersonRecord[]>("PersonRecord/Get");
@@ -20,3 +20,6 @@ export const updatePersonRecord = (person: PersonRecord) =>
         "PUT",
         person
     );
+
+export const getPersonRecordsByPhase = (phase: LifeCyclePhase) =>
+    apiRequest<PersonRecord[]>(`PersonRecord/Phase?phase=${phase}`);

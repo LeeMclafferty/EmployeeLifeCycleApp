@@ -1,4 +1,4 @@
-import { type PersonRecord } from '../types/PersonRecordType';
+import { type PersonRecord } from "../types/PersonRecordType";
 
 // Returns the PersonRecords display name
 export const getDisplayName = (person: PersonRecord): string => {
@@ -17,4 +17,12 @@ export const getDisplayName = (person: PersonRecord): string => {
     }
 
     return `${person.firstName ?? ""} ${person.lastName ?? ""}`;
+};
+
+export const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+    });
 };

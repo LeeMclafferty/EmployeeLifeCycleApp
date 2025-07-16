@@ -7,9 +7,9 @@ ul {
 }
 
 meter::-webkit-meter-optimum-value {
-    background: Blue;
+    background: royalblue;
 }
 
 :checked {
-    accent-color: blue;
+    accent-color: royalblue;
 }
