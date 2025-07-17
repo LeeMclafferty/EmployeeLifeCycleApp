@@ -1,4 +1,4 @@
-import { type PersonRecord } from "../types/PersonRecordType";
+import { LifeCyclePhase, type PersonRecord } from "../types/PersonRecordType";
 
 // Returns the PersonRecords display name
 export const getDisplayName = (person: PersonRecord): string => {
@@ -25,4 +25,8 @@ export const formatDate = (dateString: string) => {
         day: "2-digit",
         year: "numeric",
     });
+};
+
+export const formatPhase = (phase: number) => {
+    return LifeCyclePhase[phase];
 };
