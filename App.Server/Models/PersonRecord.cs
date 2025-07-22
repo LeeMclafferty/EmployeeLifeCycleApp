@@ -32,7 +32,14 @@ namespace App.Server.Models
 
         public string? JobTitle { get; set; }
         public string? JobLevel { get; set; }
-        public string? Department { get; set; }
+
+        // Link to Department
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
+
+        // link to Team
+        public int? TeamId { get; set; }
+        public Team? Team { get; set; }
 
         public LifeCyclePhase Phase { get; set; } = LifeCyclePhase.Draft;
     }

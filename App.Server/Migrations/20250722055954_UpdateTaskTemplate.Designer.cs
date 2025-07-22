@@ -4,6 +4,7 @@ using App.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250722055954_UpdateTaskTemplate")]
+    partial class UpdateTaskTemplate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,7 +67,12 @@ namespace App.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("TaskTemplateId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskTemplateId");
 
                     b.ToTable("Departments");
                 });
@@ -194,21 +202,6 @@ namespace App.Server.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("DepartmentTaskTemplate", b =>
-                {
-                    b.Property<int>("ApplicableDepartmentsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskTemplateId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ApplicableDepartmentsId", "TaskTemplateId");
-
-                    b.HasIndex("TaskTemplateId");
-
-                    b.ToTable("TaskTemplateApplicableDepartments", (string)null);
-                });
-
             modelBuilder.Entity("App.Server.Models.AssignedTask", b =>
                 {
                     b.HasOne("App.Server.Models.TaskTemplate", "TaskTemplate")
@@ -218,6 +211,13 @@ namespace App.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("TaskTemplate");
+                });
+
+            modelBuilder.Entity("App.Server.Models.Department", b =>
+                {
+                    b.HasOne("App.Server.Models.TaskTemplate", null)
+                        .WithMany("ApplicableDepartments")
+                        .HasForeignKey("TaskTemplateId");
                 });
 
             modelBuilder.Entity("App.Server.Models.PersonRecord", b =>
@@ -261,19 +261,9 @@ namespace App.Server.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("DepartmentTaskTemplate", b =>
+            modelBuilder.Entity("App.Server.Models.TaskTemplate", b =>
                 {
-                    b.HasOne("App.Server.Models.Department", null)
-                        .WithMany()
-                        .HasForeignKey("ApplicableDepartmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("App.Server.Models.TaskTemplate", null)
-                        .WithMany()
-                        .HasForeignKey("TaskTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("ApplicableDepartments");
                 });
 #pragma warning restore 612, 618
         }

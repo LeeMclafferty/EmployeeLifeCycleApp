@@ -4,6 +4,7 @@ using App.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250720033138_departmentsmodel")]
+    partial class departmentsmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,23 +55,6 @@ namespace App.Server.Migrations
                     b.ToTable("AssignedTask");
                 });
 
-            modelBuilder.Entity("App.Server.Models.Department", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
-                });
-
             modelBuilder.Entity("App.Server.Models.PersonRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -77,8 +63,8 @@ namespace App.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("DeskNumber")
                         .HasColumnType("int");
@@ -124,14 +110,7 @@ namespace App.Server.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TeamId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("TeamId");
 
                     b.ToTable("PersonRecords");
                 });
@@ -144,17 +123,14 @@ namespace App.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAutomated")
                         .HasColumnType("bit");
-
-                    b.Property<int?>("OwningDepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OwningTeamId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -165,48 +141,7 @@ namespace App.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwningDepartmentId");
-
-                    b.HasIndex("OwningTeamId");
-
                     b.ToTable("TaskTemplates");
-                });
-
-            modelBuilder.Entity("App.Server.Models.Team", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("Teams");
-                });
-
-            modelBuilder.Entity("DepartmentTaskTemplate", b =>
-                {
-                    b.Property<int>("ApplicableDepartmentsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskTemplateId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ApplicableDepartmentsId", "TaskTemplateId");
-
-                    b.HasIndex("TaskTemplateId");
-
-                    b.ToTable("TaskTemplateApplicableDepartments", (string)null);
                 });
 
             modelBuilder.Entity("App.Server.Models.AssignedTask", b =>
@@ -218,62 +153,6 @@ namespace App.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("TaskTemplate");
-                });
-
-            modelBuilder.Entity("App.Server.Models.PersonRecord", b =>
-                {
-                    b.HasOne("App.Server.Models.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("App.Server.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("App.Server.Models.TaskTemplate", b =>
-                {
-                    b.HasOne("App.Server.Models.Department", "OwningDepartment")
-                        .WithMany()
-                        .HasForeignKey("OwningDepartmentId");
-
-                    b.HasOne("App.Server.Models.Team", "OwningTeam")
-                        .WithMany()
-                        .HasForeignKey("OwningTeamId");
-
-                    b.Navigation("OwningDepartment");
-
-                    b.Navigation("OwningTeam");
-                });
-
-            modelBuilder.Entity("App.Server.Models.Team", b =>
-                {
-                    b.HasOne("App.Server.Models.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("DepartmentTaskTemplate", b =>
-                {
-                    b.HasOne("App.Server.Models.Department", null)
-                        .WithMany()
-                        .HasForeignKey("ApplicableDepartmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("App.Server.Models.TaskTemplate", null)
-                        .WithMany()
-                        .HasForeignKey("TaskTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
