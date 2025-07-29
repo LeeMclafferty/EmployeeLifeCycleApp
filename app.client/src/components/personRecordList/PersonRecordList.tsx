@@ -47,7 +47,7 @@ const PersonRecordList = () => {
                         {personRecords.map((person, i) => (
                             <tr key={i}>
                                 <td>
-                                    <a href={`/viewperson/${person.id}`}>
+                                    <a href={`/Person/Read/${person.id}`}>
                                         {getDisplayName(person)}
                                     </a>
                                 </td>
