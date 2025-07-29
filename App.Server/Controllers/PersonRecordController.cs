@@ -21,18 +21,8 @@ namespace App.Server.Controllers
         {
             if (!ModelState.IsValid)
             {
-                string message = string.Empty;
-                if (!ModelState.IsValid)
-                {
-                    foreach (var entry in ModelState)
-                    {
-                        message += (entry.Key + ", ");
-                    }
-                    message += "keys not valid.";
-                    return BadRequest(message);
-                }
-
-                return BadRequest(ModelState);
+                string message = string.Join(", ", ModelState.Keys) + " keys not valid.";
+                return BadRequest(message);
             }
 
             _context.PersonRecords.Add(personRecord);
@@ -41,15 +31,23 @@ namespace App.Server.Controllers
         }
 
         [HttpGet("Get")]
-        public async Task<List<PersonRecord>> GetAll() 
+        public async Task<ActionResult<List<PersonRecord>>> GetAll()
         {
-            return await _context.PersonRecords.ToListAsync();
+            var records = await _context.PersonRecords
+                .Include(p => p.Department)
+                .Include(p => p.Team)
+                .ToListAsync();
+            return Ok(records);
         }
 
         [HttpGet("Get/{id}")]
         public async Task<ActionResult<PersonRecord>> GetById(int id)
         {
-            var person = await _context.PersonRecords.FindAsync(id);
+            var person = await _context.PersonRecords
+                .Include(p => p.Department)
+                .Include(p => p.Team)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (person == null)
                 return NotFound(new { message = "Person not found" });
 
@@ -63,6 +61,8 @@ namespace App.Server.Controllers
             {
                 var records = await _context.PersonRecords
                     .Where(t => t.Phase == phase)
+                    .Include(p => p.Department)
+                    .Include(p => p.Team)
                     .ToListAsync();
 
                 return Ok(records);
@@ -87,7 +87,10 @@ namespace App.Server.Controllers
                 return BadRequest(message);
             }
 
-            _context.PersonRecords.Update(personRecord);
+            var existing = await _context.PersonRecords.FindAsync(personRecord.Id);
+            if (existing == null) return NotFound(new { message = "Person not found" });
+
+            _context.Entry(existing).CurrentValues.SetValues(personRecord);
             await _context.SaveChangesAsync();
             return Ok(personRecord);
         }
