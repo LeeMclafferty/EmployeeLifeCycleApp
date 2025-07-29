@@ -1,3 +1,5 @@
+import { type Department } from "./DepartmentType";
+import { type Team } from "./TeamType";
 export enum TaskPhase {
     Onboarding,
     Offboarding,
@@ -8,8 +10,14 @@ export type TaskTemplate = {
     title: string;
     description: string | null;
     isAutomated: boolean;
+    ApplicableDepartments: Department[];
     departmentId: number;
     taskPhase: TaskPhase;
+
+    OwningTeamId: number | null;
+    OwnerTeam: Team | null;
+    OwningDepartmentId: number | null;
+    OwningDepartment: Department | null;
 };
 
 export type AssignedTask = {

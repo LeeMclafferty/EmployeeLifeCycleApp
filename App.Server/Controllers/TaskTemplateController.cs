@@ -38,23 +38,30 @@ namespace App.Server.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult> Create(TaskTemplate taskTemplate)
+        public async Task<ActionResult> Create([FromBody] CreateTaskTemplateRequest request)
         {
-            string message = string.Empty;
             if (!ModelState.IsValid)
             {
-                foreach (var entry in ModelState)
-                {
-                    message += (entry.Key + ", ");
-                }
-                message += "keys not valid.";
-                return BadRequest(message);
+                return BadRequest("Invalid model state.");
             }
 
+            var taskTemplate = request.TaskTemplate;
+            var departmentIds = request.DepartmentIds;
+
+            // Fetch departments by IDs
+            var departments = await _context.Departments
+                .Where(d => departmentIds.Contains(d.Id))
+                .ToListAsync();
+
+            // Attach to navigation property
+            taskTemplate.ApplicableDepartments = departments;
+
             _context.TaskTemplates.Add(taskTemplate);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
             return Ok(taskTemplate);
         }
+
 
         [HttpPut("Update")]
         public async Task<ActionResult> Update(TaskTemplate taskTemplate)

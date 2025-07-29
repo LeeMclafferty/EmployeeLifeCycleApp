@@ -59,7 +59,7 @@ namespace App.Server
 
             app.UseAuthorization();
 
-//             Will use to define dashboard as the default route later
+            //Will use to define dashboard as the default route later
 //             app.MapControllerRoute(
 //                 name: "default",
 //                 pattern: "{controller=Home}/{action=Index}/{id?}");
