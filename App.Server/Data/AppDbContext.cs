@@ -21,7 +21,21 @@ namespace App.Server.Data
             modelBuilder.Entity<TaskTemplate>()
                 .HasMany(t => t.ApplicableDepartments)
                 .WithMany()
-                .UsingEntity(j => j.ToTable("TaskTemplateApplicableDepartments")); // 👈 Optional if you want a specific name
+                .UsingEntity(j => j.ToTable("TaskTemplateApplicableDepartments"));
+
+            // Explicitly configure PersonRecord -> Department
+            modelBuilder.Entity<PersonRecord>()
+                .HasOne(p => p.Department)
+                .WithMany()
+                .HasForeignKey(p => p.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Explicitly configure PersonRecord -> Team
+            modelBuilder.Entity<PersonRecord>()
+                .HasOne(p => p.Team)
+                .WithMany()
+                .HasForeignKey(p => p.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
