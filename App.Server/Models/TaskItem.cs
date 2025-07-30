@@ -19,7 +19,7 @@ namespace App.Server.Models
         public List<Department> ApplicableDepartments { get; set; } = new();
         public TaskPhase taskPhase { get; set; }
 
-        // 🔹 Owning team or department
+        // Owning team or department
         public int? OwningTeamId { get; set; }
         public Team? OwningTeam { get; set; }
         public int? OwningDepartmentId { get; set; }

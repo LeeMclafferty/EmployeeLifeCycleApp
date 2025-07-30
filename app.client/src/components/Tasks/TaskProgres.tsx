@@ -2,11 +2,11 @@ import { type AssignedTask } from "../../types/TaskDataTypes";
 import "./TaskList.css";
 
 type Props = {
-    assignedTask: AssignedTask[];
+    assignedTasks: AssignedTask[];
 };
-const TaskProgress = ({ assignedTask }: Props) => {
-    const completed = assignedTask.filter((t) => t.isComplete).length;
-    const total = assignedTask.length;
+const TaskProgress = ({ assignedTasks }: Props) => {
+    const completed = assignedTasks.filter((t) => t.isComplete).length;
+    const total = assignedTasks.length;
 
     return (
         <>

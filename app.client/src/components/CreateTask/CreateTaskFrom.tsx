@@ -86,6 +86,7 @@ const CreateTaskForm = () => {
         e.preventDefault();
         createTaskTemplate(request)
             .then((res) => console.log("Created:", res))
+            .then(() => formRef.current?.reset())
             .catch((err) => console.error("Error:", err));
     };
 

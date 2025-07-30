@@ -11,6 +11,8 @@ import {
 import "./Tasklist.css";
 import TaskProgress from "./TaskProgres";
 import PersonRecordSelector from "../PersonRecordSelector/PersonRecordSelector";
+import { type Department } from "../../types/DepartmentType";
+import { getDepartments } from "../../api/DepartmentApi";
 
 // 5 of 8 completed
 // progress bar
@@ -23,7 +25,8 @@ type Props = {
 };
 
 const TaskList = ({ personRecord }: Props) => {
-    const [assignedTask, setAssignedTask] = useState<AssignedTask[]>([]);
+    const [assignedTasks, setAssignedTask] = useState<AssignedTask[]>([]);
+    const [departments, setDepartments] = useState<Department[]>([]);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -33,10 +36,26 @@ const TaskList = ({ personRecord }: Props) => {
             }
 
             try {
-                const data = await getAssignedTaskByNewHireId(personRecord.id);
-                setAssignedTask(data);
+                const tasks = await getAssignedTaskByNewHireId(personRecord.id);
+                setAssignedTask(tasks);
+                console.log(assignedTasks);
+                // Call fetchDepartments and pass the tasks
+                await fetchDepartments(tasks);
             } catch (err) {
                 console.error("Failed to load tasks:", err);
+            }
+        };
+
+        const fetchDepartments = async (tasks: AssignedTask[]) => {
+            try {
+                const deps: Department[] = await getDepartments();
+                const taskDeptIds = tasks.map(
+                    (t) => t.taskTemplate.owningDepartmentId
+                );
+
+                setDepartments(deps.filter((d) => taskDeptIds.includes(d.id)));
+            } catch (err) {
+                console.error("Failed to load departments:", err);
             }
         };
 
@@ -64,6 +83,15 @@ const TaskList = ({ personRecord }: Props) => {
 
     return (
         <>
+            <div>
+                <select>
+                    {departments.map((d) => (
+                        <option key={d.id} value={d.id}>
+                            {d.displayName}
+                        </option>
+                    ))}
+                </select>
+            </div>
             <div className="task-layout">
                 <div className="person-list">
                     <PersonRecordSelector
@@ -72,9 +100,9 @@ const TaskList = ({ personRecord }: Props) => {
                     />
                 </div>
                 <div className="task-list">
-                    <TaskProgress assignedTask={assignedTask} />
+                    <TaskProgress assignedTasks={assignedTasks} />
                     <ul>
-                        {assignedTask.map((task) => (
+                        {assignedTasks.map((task) => (
                             <li key={task.id}>
                                 <label>
                                     <input
