@@ -46,7 +46,7 @@ namespace App.Server.Controllers
             }
 
             var taskTemplate = request.TaskTemplate;
-            var departmentIds = request.DepartmentIds;
+            var departmentIds = request.DepartmentIds ?? new List<int>();
 
             // Fetch departments by IDs
             var departments = await _context.Departments
