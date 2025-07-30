@@ -3,6 +3,7 @@ import TaskList from "../components/Tasks/TaskList";
 import { type PersonRecord } from "../types/PersonRecordType";
 import { getPersonRecordById } from "../api/PersonRecordApi";
 import { useParams } from "react-router-dom";
+import "./pageCSS/pages.css";
 
 const TaskPage = () => {
     const { personId } = useParams();
@@ -27,7 +28,8 @@ const TaskPage = () => {
     }
     return (
         <>
-            <h2>Task Page</h2>
+            <h1>Task Page</h1>
+            <h4>Complete task and stay up to date with progress</h4>
             <TaskList personRecord={personRecord} />
         </>
     );

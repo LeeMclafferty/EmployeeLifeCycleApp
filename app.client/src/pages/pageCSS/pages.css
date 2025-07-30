@@ -1,0 +1,10 @@
+h1,
+h4 {
+    text-align: left; /* left-align the text */
+    margin-left: 20px; /* optional padding from the left */
+}
+
+h4 {
+    margin-top: 5px; /* reduce vertical space */
+    font-weight: lighter;
+}

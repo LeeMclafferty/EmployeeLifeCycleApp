@@ -35,3 +35,8 @@
 .record-info {
     font-weight: lighter;
 }
+
+.scroll-container {
+    max-height: 800px;
+    overflow-y: auto;
+}

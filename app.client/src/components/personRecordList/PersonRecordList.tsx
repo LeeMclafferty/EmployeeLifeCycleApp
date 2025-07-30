@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPersonRecords } from "../../api/personRecordApi";
+import { getPersonRecords } from "../../api/PersonRecordApi";
 import { type PersonRecord } from "../../types/PersonRecordType";
 import { getDisplayName, formatPhase } from "../../helpers/formattingHelpers";
 
@@ -36,13 +36,20 @@ const PersonRecordList = () => {
                                 .filter(
                                     (key) =>
                                         !key.toLowerCase().includes("name") &&
-                                        key != "id"
+                                        key !== "id" &&
+                                        key !== "departmentId" &&
+                                        key !== "teamId" &&
+                                        key !== "department" &&
+                                        key !== "team"
                                 )
                                 .map((key) => (
                                     <th key={key}>{formatHeader(key)}</th>
                                 ))}
+                            <th key="department">Department</th>
+                            <th key="team">Team</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {personRecords.map((person, i) => (
                             <tr key={i}>
@@ -56,7 +63,12 @@ const PersonRecordList = () => {
                                         (key) =>
                                             !key
                                                 .toLowerCase()
-                                                .includes("name") && key != "id"
+                                                .includes("name") &&
+                                            key !== "id" &&
+                                            key !== "departmentId" &&
+                                            key !== "teamId" &&
+                                            key !== "department" &&
+                                            key !== "team"
                                     )
                                     .map((key) => (
                                         <td key={key}>
@@ -77,7 +89,9 @@ const PersonRecordList = () => {
                                                       key as keyof typeof person
                                                   ]?.toString()}
                                         </td>
-                                    ))}{" "}
+                                    ))}
+                                <td>{person.department?.displayName ?? ""}</td>
+                                <td>{person.team?.name ?? ""}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -1,44 +1,68 @@
 import type React from "react";
 import { createPersonRecord } from "../../api/personRecordApi";
-import type { PersonRecord } from "../../types/PersonRecord";
+import { type PersonRecord } from "../../types/PersonRecordType";
 
 const AddPersonRecordForm = () => {
-
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const form = document.getElementById("AddPersonForm") as HTMLFormElement;
+        const form = document.getElementById(
+            "AddPersonForm"
+        ) as HTMLFormElement;
         const formData = collectFormData(form);
         createPersonRecord(formData)
-            .then( () => {
+            .then(() => {
                 form.reset();
-            }).catch(err => {
-                console.error("Failed to submit person record:", err);
             })
-    }
+            .catch((err) => {
+                console.error("Failed to submit person record:", err);
+            });
+    };
 
     const collectFormData = (form: HTMLFormElement) => {
-        const deskRaw:string = (form.elements.namedItem("DeskNumber") as HTMLInputElement)?.value;
+        const deskRaw: string = (
+            form.elements.namedItem("DeskNumber") as HTMLInputElement
+        )?.value;
 
         const personRecord: PersonRecord = {
-            firstName: (form.elements.namedItem("FirstName") as HTMLInputElement)?.value,
-            middleName: (form.elements.namedItem("MiddleName") as HTMLInputElement)?.value,
-            lastName: (form.elements.namedItem("LastName") as HTMLInputElement)?.value,
-            preferredName: (form.elements.namedItem("PreferredName") as HTMLInputElement)?.value,
-            initials: (form.elements.namedItem("Initials") as HTMLInputElement)?.value,
-            startDate: (form.elements.namedItem("StartDate") as HTMLInputElement)?.value,
+            firstName: (
+                form.elements.namedItem("FirstName") as HTMLInputElement
+            )?.value,
+            middleName: (
+                form.elements.namedItem("MiddleName") as HTMLInputElement
+            )?.value,
+            lastName: (form.elements.namedItem("LastName") as HTMLInputElement)
+                ?.value,
+            preferredName: (
+                form.elements.namedItem("PreferredName") as HTMLInputElement
+            )?.value,
+            initials: (form.elements.namedItem("Initials") as HTMLInputElement)
+                ?.value,
+            startDate: (
+                form.elements.namedItem("StartDate") as HTMLInputElement
+            )?.value,
             endDate: null,
-            phoneNumber: (form.elements.namedItem("PhoneNumber") as HTMLInputElement)?.value,
+            phoneNumber: (
+                form.elements.namedItem("PhoneNumber") as HTMLInputElement
+            )?.value,
             deskNumber: deskRaw === "" ? null : Number(deskRaw),
-            emailAddress: (form.elements.namedItem("EmailAddress") as HTMLInputElement)?.value,
-            isFullyRemote: (form.elements.namedItem("FullyRemote") as HTMLInputElement)?.checked,
-            jobTitle: (form.elements.namedItem("JobTitle") as HTMLInputElement)?.value,
-            jobLevel: (form.elements.namedItem("JobLevel") as HTMLInputElement)?.value,
-            department: (form.elements.namedItem("Department") as HTMLInputElement)?.value
+            emailAddress: (
+                form.elements.namedItem("EmailAddress") as HTMLInputElement
+            )?.value,
+            isFullyRemote: (
+                form.elements.namedItem("FullyRemote") as HTMLInputElement
+            )?.checked,
+            jobTitle: (form.elements.namedItem("JobTitle") as HTMLInputElement)
+                ?.value,
+            jobLevel: (form.elements.namedItem("JobLevel") as HTMLInputElement)
+                ?.value,
+            department: (
+                form.elements.namedItem("Department") as HTMLInputElement
+            )?.value,
         };
 
         return personRecord;
-    }
+    };
 
     return (
         <>
@@ -99,6 +123,6 @@ const AddPersonRecordForm = () => {
             </form>
         </>
     );
-}
+};
 
 export default AddPersonRecordForm;

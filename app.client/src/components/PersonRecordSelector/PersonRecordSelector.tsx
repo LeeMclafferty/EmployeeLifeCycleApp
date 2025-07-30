@@ -47,28 +47,30 @@ const PersonRecordSelector = ({ person, phase }: Props) => {
 
     return (
         <>
-            <ul>
-                {phasePersons.map((person) => (
-                    <li key={person.id}>
-                        {person.id === selectedPerson?.id ? (
-                            <div className="person-card">
-                                <PersonRecordCard
-                                    person={person}
-                                    isActive={true}
-                                />
-                            </div>
-                        ) : (
-                            <div className="person-card">
-                                <PersonRecordCard
-                                    person={person}
-                                    isActive={false}
-                                    onClick={() => handleCardClick(person)}
-                                />
-                            </div>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <div className="scroll-container">
+                <ul>
+                    {phasePersons.map((person) => (
+                        <li key={person.id}>
+                            {person.id === selectedPerson?.id ? (
+                                <div className="person-card">
+                                    <PersonRecordCard
+                                        person={person}
+                                        isActive={true}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="person-card">
+                                    <PersonRecordCard
+                                        person={person}
+                                        isActive={false}
+                                        onClick={() => handleCardClick(person)}
+                                    />
+                                </div>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </>
     );
 };

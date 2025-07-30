@@ -14,6 +14,14 @@ meter::-webkit-meter-optimum-value {
 
 #task-progress {
     width: 300px;
+    margin-top: 0.2em;
+    align-items: end;
+}
+
+#progress-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
 }
 
 :checked {
@@ -22,7 +30,7 @@ meter::-webkit-meter-optimum-value {
 
 .task-layout {
     display: flex;
-    gap: 24px;
+    gap: 100px;
     align-items: flex-start;
 }
 

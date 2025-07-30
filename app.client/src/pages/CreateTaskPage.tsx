@@ -1,8 +1,11 @@
+import CreateTaskForm from "../components/CreateTask/CreateTaskFrom";
+import "./pageCSS/pages.css";
 const CreateTaskPage = () => {
     return (
         <>
-            <h2>Create Task Page</h2>
-            <p>content</p>
+            <h1>Create Task</h1>
+            <h4>Add a new onboarding or offboarding task</h4>
+            <CreateTaskForm />
         </>
     );
 };

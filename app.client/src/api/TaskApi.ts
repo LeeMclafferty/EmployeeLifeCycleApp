@@ -1,5 +1,9 @@
 import { apiRequest } from "./ApiClient";
-import { type TaskTemplate, type AssignedTask } from "../types/TaskDataTypes";
+import {
+    type TaskTemplate,
+    type AssignedTask,
+    type CreateTaskTemplateRequest,
+} from "../types/TaskDataTypes";
 
 export const getTaskTemplates = () =>
     apiRequest<TaskTemplate[]>("TaskTemplate/Get");
@@ -19,8 +23,12 @@ export const updateTaskTemplate = (data: TaskTemplate) =>
 export const updateAssignedTask = (data: AssignedTask) =>
     apiRequest<AssignedTask, AssignedTask>("AssignedTask/Update", "PUT", data);
 
-export const createTaskTemplate = (data: TaskTemplate) =>
-    apiRequest<TaskTemplate, TaskTemplate>("TaskTemplate/Create", "POST", data);
+export const createTaskTemplate = (data: CreateTaskTemplateRequest) =>
+    apiRequest<CreateTaskTemplateRequest, CreateTaskTemplateRequest>(
+        "TaskTemplate/Create",
+        "POST",
+        data
+    );
 
 export const createAssignedTask = (data: AssignedTask) =>
     apiRequest<AssignedTask, AssignedTask>("AssignedTask/Create", "POST", data);

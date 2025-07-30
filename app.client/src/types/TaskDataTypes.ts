@@ -6,18 +6,18 @@ export enum TaskPhase {
 }
 
 export type TaskTemplate = {
-    id: number;
+    id?: number;
     title: string;
     description: string | null;
     isAutomated: boolean;
-    ApplicableDepartments: Department[];
-    departmentId: number;
+    applicableDepartments: Department[];
     taskPhase: TaskPhase;
 
-    OwningTeamId: number | null;
-    OwnerTeam: Team | null;
-    OwningDepartmentId: number | null;
-    OwningDepartment: Department | null;
+    owningTeamId: number | null;
+    owningTeam?: Team | null;
+
+    owningDepartmentId: number | null;
+    owningDepartment?: Department | null;
 };
 
 export type AssignedTask = {
@@ -28,4 +28,9 @@ export type AssignedTask = {
     completedAt: string;
     notes: string;
     taskTemplate: TaskTemplate;
+};
+
+export type CreateTaskTemplateRequest = {
+    taskTemplate: TaskTemplate;
+    departmentIds: number[];
 };

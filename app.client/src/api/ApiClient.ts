@@ -32,9 +32,20 @@ export const apiRequest = async <TResponse, TBody = undefined>(
     });
 
     if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Server Error");
+        const contentType = res.headers.get("content-type");
+        let errMsg = "Server Error";
+
+        if (contentType && contentType.includes("application/json")) {
+            const err = await res.json();
+            errMsg = err.message || errMsg;
+        } else {
+            // fallback for plain text errors
+            errMsg = await res.text();
+        }
+
+        throw new Error(errMsg);
     }
+
 
     return await res.json();
 };

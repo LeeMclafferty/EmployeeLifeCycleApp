@@ -18,6 +18,11 @@ const TaskProgress = ({ assignedTask }: Props) => {
                     min="0"
                     max={total}
                 />
+                <label>
+                    {total > 0
+                        ? `${Math.round((completed / total) * 100)}%`
+                        : "0%"}
+                </label>
             </div>
         </>
     );

@@ -33,7 +33,7 @@ const PersonRecordCard = ({ person, isActive, onClick }: Props) => {
                         Start date: {formatDate(person.startDate || "")}
                     </div>
                     <div className="record-info">
-                        Department: {person.department}
+                        Department: {person.department?.displayName}
                     </div>
                     {isActive ? (
                         <div className="record-info">

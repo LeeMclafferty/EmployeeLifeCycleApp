@@ -116,7 +116,7 @@ const ViewPersonRecord = ({ person }: Props) => {
                 <div>
                     <label>
                         Department:
-                        <span> {person.department}</span>
+                        <span> {person.department?.displayName}</span>
                     </label>
                 </div>
             </form>
