@@ -28,5 +28,6 @@ export const formatDate = (dateString: string) => {
 };
 
 export const formatPhase = (phase: number) => {
-    return LifeCyclePhase[phase];
+    const sPhase = LifeCyclePhase[phase];
+    return sPhase;
 };

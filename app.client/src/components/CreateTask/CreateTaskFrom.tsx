@@ -67,10 +67,10 @@ const CreateTaskForm = () => {
 
     // filters teams by department
     const filterTeams = () => {
-        teams.filter(
+        return teams.filter(
             (t) =>
                 t.departmentId === selectedDepartmentId && t.departmentId === 4
-        ); // Only do for operations for now, need a more scalable solution.
+        );
     };
 
     // department dropdown also updates request

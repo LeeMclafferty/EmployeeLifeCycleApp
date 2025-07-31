@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getPersonRecords } from "../../api/PersonRecordApi";
 import { type PersonRecord } from "../../types/PersonRecordType";
 import { getDisplayName, formatPhase } from "../../helpers/formattingHelpers";
+import "./PersonRecordList.css";
 
 const PersonRecordList = () => {
     const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
@@ -26,49 +27,55 @@ const PersonRecordList = () => {
     };
 
     return (
-        <>
+        <div className="card shadow-sm p-3">
             {personRecords.length > 0 && (
-                <table>
-                    <thead>
+                <table className="table table-hover align-middle">
+                    <thead className="table-light">
                         <tr>
-                            <th key="displayName">Display Name</th>
+                            <th>Display Name</th>
+                            {/* Dynamically render other headers */}
                             {Object.keys(personRecords[0])
                                 .filter(
                                     (key) =>
-                                        !key.toLowerCase().includes("name") &&
-                                        key !== "id" &&
-                                        key !== "departmentId" &&
-                                        key !== "teamId" &&
-                                        key !== "department" &&
-                                        key !== "team"
+                                        ![
+                                            "id",
+                                            "departmentid",
+                                            "teamid",
+                                            "department",
+                                            "team",
+                                        ].includes(key.toLowerCase()) &&
+                                        !key.toLowerCase().includes("name")
                                 )
+
                                 .map((key) => (
                                     <th key={key}>{formatHeader(key)}</th>
                                 ))}
-                            <th key="department">Department</th>
-                            <th key="team">Team</th>
+                            <th>Department</th>
+                            <th>Team</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         {personRecords.map((person, i) => (
                             <tr key={i}>
                                 <td>
-                                    <a href={`/Person/Read/${person.id}`}>
+                                    <a
+                                        href={`/Person/Read/${person.id}`}
+                                        className="text-primary fw-medium"
+                                    >
                                         {getDisplayName(person)}
                                     </a>
                                 </td>
                                 {Object.keys(person)
                                     .filter(
                                         (key) =>
-                                            !key
-                                                .toLowerCase()
-                                                .includes("name") &&
-                                            key !== "id" &&
-                                            key !== "departmentId" &&
-                                            key !== "teamId" &&
-                                            key !== "department" &&
-                                            key !== "team"
+                                            ![
+                                                "id",
+                                                "departmentid",
+                                                "teamid",
+                                                "department",
+                                                "team",
+                                            ].includes(key.toLowerCase()) &&
+                                            !key.toLowerCase().includes("name")
                                     )
                                     .map((key) => (
                                         <td key={key}>
@@ -79,12 +86,16 @@ const PersonRecordList = () => {
                                                           key as keyof typeof person
                                                       ] as string
                                                   )
+                                                : key === "phase"
+                                                ? formatPhase(
+                                                      person[
+                                                          key as keyof typeof person
+                                                      ] as number
+                                                  )
                                                 : key === "isFullyRemote"
                                                 ? person.isFullyRemote
                                                     ? "Remote"
                                                     : "In Office"
-                                                : key === "phase"
-                                                ? formatPhase(person.phase)
                                                 : person[
                                                       key as keyof typeof person
                                                   ]?.toString()}
@@ -97,7 +108,7 @@ const PersonRecordList = () => {
                     </tbody>
                 </table>
             )}
-        </>
+        </div>
     );
 };
 
