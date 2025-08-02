@@ -82,32 +82,33 @@ const DashboardPage = () => {
                                 value:
                                     phaseCounts[Number(LifeCyclePhase.Draft)] ??
                                     0,
-                                color: "#007bff",
+                                color: "#FFC154",
                             },
                             {
                                 value:
                                     phaseCounts[
                                         Number(LifeCyclePhase.Onboarding)
                                     ] ?? 0,
-                                color: "#00ff95",
+                                color: "#4778b3ff",
                             },
                             {
                                 value:
                                     phaseCounts[
                                         Number(LifeCyclePhase.Active)
                                     ] ?? 0,
-                                color: "#fbff00",
+                                color: "#47B39C",
                             },
                             {
                                 value:
                                     phaseCounts[
                                         Number(LifeCyclePhase.Offboarded)
                                     ] ?? 0,
-                                color: "#ff0000",
+                                color: "#EC6B56",
                             },
                         ]}
                     />
                 </div>
+                <div className="card graph-card"></div>
             </div>
 
             <PersonRecordList />
