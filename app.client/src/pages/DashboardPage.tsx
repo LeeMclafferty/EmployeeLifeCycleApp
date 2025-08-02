@@ -8,9 +8,18 @@ import { getAssignedTask } from "../api/TaskApi";
 import { type AssignedTask, TaskPhase } from "../types/TaskDataTypes.ts";
 import { LifeCyclePhase, type PersonRecord } from "../types/PersonRecordType";
 import { getPersonRecords } from "../api/PersonRecordApi";
+import PieLegend from "../components/PieChart/PieLegend.tsx";
 
 // Pie chart: number of employees per status
 // Progress circle: % completion of current employees being onboarded.
+
+const legendItems = [
+    { label: "Draft", color: "#FFC154" },
+    { label: "Onboarding", color: "#4778b3ff" },
+    { label: "Active", color: "#47B39C" },
+    { label: "Offboarded", color: "#EC6B56" },
+];
+
 const DashboardPage = () => {
     const [completion, setCompletion] = useState(0);
     const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
@@ -55,7 +64,7 @@ const DashboardPage = () => {
     }, []);
 
     const phaseCounts = personRecords.reduce((acc, person) => {
-        const phaseKey = Number(person.phase); // ✅ ensure numeric
+        const phaseKey = Number(person.phase);
         acc[phaseKey] = (acc[phaseKey] || 0) + 1;
         console.log(acc);
         return acc;
@@ -107,6 +116,7 @@ const DashboardPage = () => {
                             },
                         ]}
                     />
+                    <PieLegend items={legendItems} />
                 </div>
                 <div className="card graph-card"></div>
             </div>

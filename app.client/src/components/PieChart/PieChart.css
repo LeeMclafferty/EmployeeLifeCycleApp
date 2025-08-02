@@ -10,3 +10,26 @@
         /* Segment 3: 20% */ #e6e6e6 90% 100% /* Segment 4: 10% */
     );
 }
+
+.pie-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px; /* small rounded corners */
+    display: inline-block;
+    margin-right: 8px;
+}
