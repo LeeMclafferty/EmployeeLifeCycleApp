@@ -1,0 +1,12 @@
+.pie-chart {
+    --size: 120px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: conic-gradient(
+        #007bff 0% 40%,
+        /* Segment 1: 40% */ #28a745 40% 70%,
+        /* Segment 2: 30% */ #ffc107 70% 90%,
+        /* Segment 3: 20% */ #e6e6e6 90% 100% /* Segment 4: 10% */
+    );
+}

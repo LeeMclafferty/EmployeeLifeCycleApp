@@ -27,7 +27,7 @@ const PersonRecordList = () => {
     };
 
     return (
-        <div className="card shadow-sm p-3">
+        <div className="card shadow-sm">
             {personRecords.length > 0 && (
                 <table className="table table-hover align-middle">
                     <thead className="table-light">

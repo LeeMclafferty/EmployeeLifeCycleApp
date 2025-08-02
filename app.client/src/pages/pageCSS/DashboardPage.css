@@ -1,0 +1,9 @@
+.graphs {
+    display: flex;
+    gap: 16px;
+}
+
+.graph-card {
+    width: 300px;
+    flex: 0 0 auto; /* prevents shrinking */
+}

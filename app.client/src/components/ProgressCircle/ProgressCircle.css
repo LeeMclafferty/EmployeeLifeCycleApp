@@ -1,0 +1,22 @@
+.progress-circle {
+    --size: 100px;
+    --thickness: 10px;
+    --value: 75;
+
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: conic-gradient(#007bff calc(var(--value) * 1%), #e6e6e6 0);
+
+    /* Creates the hole in the middle */
+    -webkit-mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - var(--thickness)),
+        black 0
+    );
+    mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - var(--thickness)),
+        black 0
+    );
+}

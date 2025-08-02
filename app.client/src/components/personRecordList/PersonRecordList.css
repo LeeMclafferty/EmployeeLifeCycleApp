@@ -7,12 +7,25 @@
 }
 
 .table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #f8f9fa;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 5px;
+}
+.table thead th:last-child {
+    border-top-right-radius: 5px;
 }
 
 .table th {
     font-weight: 600;
-    background-color: #f8f9fa;
 }
 .table td {
     vertical-align: middle;

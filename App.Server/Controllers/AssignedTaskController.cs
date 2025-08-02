@@ -19,8 +19,11 @@ namespace App.Server.Controllers
         [HttpGet("Get/{id}")]
         public async Task<ActionResult<AssignedTask>> GetAssignedTaskById(int id)
         {
-            var assignedTask = await _context.AssignedTask.FindAsync(id);
-            if(assignedTask == null)
+            var assignedTask = await _context.AssignedTask
+                .Include(t => t.TaskTemplate)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (assignedTask == null)
                 return NotFound(new {message = "Assigned Task not found"});
 
             return Ok(assignedTask);
@@ -29,9 +32,12 @@ namespace App.Server.Controllers
         [HttpGet("Get")]
         public async Task<ActionResult<List<AssignedTask>>> GetAllAssignedTask()
         {
-            var assignedTaskList = await _context.AssignedTask.ToListAsync();
-            if (assignedTaskList.IsNullOrEmpty())
-                return NotFound(new { message = "Unable to fetch all AssignedTask" });
+            var assignedTaskList = await _context.AssignedTask
+                    .Include(t => t.TaskTemplate)
+                    .ToListAsync();
+
+            if (assignedTaskList == null || !assignedTaskList.Any())
+                return NotFound(new { message = "No assigned tasks found" });
 
             return Ok(assignedTaskList);
         }
