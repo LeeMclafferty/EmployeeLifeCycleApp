@@ -4,6 +4,30 @@
 }
 
 .graph-card {
-    width: 300px;
-    flex: 0 0 auto; /* prevents shrinking */
+    display: flex; /* horizontal layout */
+    align-items: center; /* vertically center items */
+    justify-content: flex-start; /* content starts from the left */
+    gap: 20px; /* spacing between circle and text */
+    padding: 16px 24px; /* balanced padding */
+    background: #fff;
+    border-radius: 8px; /* keep existing rounded corners */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 350px; /* keep card rectangular */
+}
+
+.card-text {
+    color: #333; /* subtle dark gray */
+    letter-spacing: 0.3px;
+    text-align: end;
+}
+
+.stat-number {
+    font-weight: bold;
+    font-size: 1.8rem;
+    line-height: 1.2;
+}
+
+.stat-text {
+    font-size: 1rem;
+    font-weight: lighter;
 }

@@ -3,11 +3,14 @@ import "./PieChart.css";
 type Segment = { value: number; color: string };
 
 const PieChart: React.FC<{ data: Segment[] }> = ({ data }) => {
+    const total = data.reduce((sum, seg) => sum + seg.value, 0);
     let current = 0;
+
     const gradient = data
         .map((seg) => {
             const start = current;
-            current += seg.value;
+            const percent = total > 0 ? (seg.value / total) * 100 : 0;
+            current += percent;
             return `${seg.color} ${start}% ${current}%`;
         })
         .join(", ");
