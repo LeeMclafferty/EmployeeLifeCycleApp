@@ -1,11 +1,11 @@
 h1,
 h4 {
-    text-align: left; /* left-align the text */
-    margin-left: 20px; /* optional padding from the left */
+    text-align: left;
+    margin-left: 20px;
 }
 
 h4 {
-    margin-top: 5px; /* reduce vertical space */
+    margin-top: 5px;
     font-weight: lighter;
 }
 

@@ -72,8 +72,10 @@ const DashboardPage = () => {
 
     return (
         <>
-            <h1>Dashboard Page</h1>
-            <h4>An overview of all users and tasks</h4>
+            <div>
+                <h1>Dashboard Page</h1>
+                <h4>An overview of all users and tasks</h4>
+            </div>
             <div className="graphs">
                 <div className="card graph-card">
                     <ProgressCircle value={completion} />

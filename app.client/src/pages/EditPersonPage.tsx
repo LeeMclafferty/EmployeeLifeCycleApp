@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { getPersonRecordById } from "../api/personRecordApi";
 import { type PersonRecord } from "../types/PersonRecordType";
 import "./pageCSS/pages.css";
+import "./pageCSS/EditPersonPage.css";
 
 const EditPersonPage = () => {
     const { personId } = useParams();
@@ -29,9 +30,12 @@ const EditPersonPage = () => {
 
     return (
         <>
-            <h1>Edit Person Page</h1>
-            <h4>Make changes to an existing person</h4>
-            <EditPersonRecordForm person={personRecord} />
+            <div className="main">
+                <h1>Edit Person Page</h1>
+                <h4>Make changes to an existing person</h4>
+
+                <EditPersonRecordForm person={personRecord} />
+            </div>
         </>
     );
 };
