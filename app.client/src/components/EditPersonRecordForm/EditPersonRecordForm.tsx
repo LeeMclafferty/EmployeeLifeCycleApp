@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { type Department } from "../../types/DepartmentType";
 import { type Team } from "../../types/TeamType";
 import { getTeams } from "../../api/TeamApi";
+import "./EditPersonRecordForm.css";
 
 type Props = {
     person: PersonRecord;
@@ -141,111 +142,83 @@ const EditPersonRecordForm = ({ person }: Props) => {
     };
 
     return (
-        <form id="EditPersonForm" onSubmit={handleSubmit}>
-            <label>
-                First Name:
-                <input
-                    type="text"
-                    name="FirstName"
-                    defaultValue={person.firstName || ""}
-                />
-            </label>
-            <label>
-                Middle Name:
-                <input
-                    type="text"
-                    name="MiddleName"
-                    defaultValue={person.middleName || ""}
-                />
-            </label>
-            <label>
-                Last Name:
-                <input
-                    type="text"
-                    name="LastName"
-                    defaultValue={person.lastName || ""}
-                />
-            </label>
-            <label>
-                Preferred Name:
-                <input
-                    type="text"
-                    name="PreferredName"
-                    defaultValue={person.preferredName || ""}
-                />
-            </label>
-            <label>
-                initials:
-                <input
-                    type="text"
-                    name="Initials"
-                    defaultValue={person.initials || ""}
-                />
-            </label>
-            <label>
-                Start Date:
-                <input
-                    type="date"
-                    name="StartDate"
-                    defaultValue={
-                        person.startDate
-                            ? person.startDate.split("T")[0] // or manually slice or regex if needed
-                            : ""
-                    }
-                />
-            </label>
-            <label>
-                Email:
-                <input
-                    type="email"
-                    name="EmailAddress"
-                    defaultValue={person.emailAddress || ""}
-                />
-            </label>
-            <label>
-                Phone Number:
-                <input
-                    type="text"
-                    name="PhoneNumber"
-                    defaultValue={person.phoneNumber || ""}
-                />
-            </label>
-            <label>
-                Desk Number:
-                <input
-                    type="number"
-                    name="DeskNumber"
-                    defaultValue={person.deskNumber || ""}
-                />
-            </label>
-            <label>
-                Fully Remote:
-                <input
-                    type="checkbox"
-                    name="FullyRemote"
-                    defaultChecked={person.isFullyRemote}
-                />
-            </label>
-            <label>
-                Job Title:
-                <input
-                    type="text"
-                    name="JobTitle"
-                    defaultValue={person.jobTitle || ""}
-                />
-            </label>
-            <label>
-                Job Level:
-                <input
-                    type="text"
-                    name="JobLevel"
-                    defaultValue={person.jobLevel || ""}
-                />
-            </label>
-            <label>
-                Department:
+        <form id="EditPersonForm" onSubmit={handleSubmit} className="container">
+            {/* First Row: First, Middle, Last */}
+            <div className="row mb-3">
+                <div className="col-md-4">
+                    <label className="form-label">First Name</label>
+                    <input
+                        type="text"
+                        name="FirstName"
+                        defaultValue={person.firstName || ""}
+                        className="form-control"
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label className="form-label">Middle Name</label>
+                    <input
+                        type="text"
+                        name="MiddleName"
+                        defaultValue={person.middleName || ""}
+                        className="form-control"
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label className="form-label">Last Name</label>
+                    <input
+                        type="text"
+                        name="LastName"
+                        defaultValue={person.lastName || ""}
+                        className="form-control"
+                    />
+                </div>
+            </div>
+
+            {/* Second Row: Preferred Name + Initials */}
+            <div className="row mb-3">
+                <div className="col-md-6">
+                    <label className="form-label">Preferred Name</label>
+                    <input
+                        type="text"
+                        name="PreferredName"
+                        defaultValue={person.preferredName || ""}
+                        className="form-control"
+                    />
+                </div>
+                <div className="col-md-6">
+                    <label className="form-label">Initials</label>
+                    <input
+                        type="text"
+                        name="Initials"
+                        defaultValue={person.initials || ""}
+                        className="form-control"
+                    />
+                </div>
+            </div>
+
+            {/* Other fields... keep each in a full-width row */}
+            <div className="row g-4 mb-4">
+                <div className="col-md-4">
+                    <label className="form-label">Start Date</label>
+                    <input
+                        type="date"
+                        name="StartDate"
+                        defaultValue={
+                            person.startDate
+                                ? person.startDate.split("T")[0]
+                                : ""
+                        }
+                        className="form-control w-100"
+                    />
+                </div>
+            </div>
+
+            <div className="mb-3">
+                <label className="form-label">Department</label>
                 <select
                     name="Department"
+                    className="form-select"
+                    value={selectedDepartment ?? ""}
                     onChange={(e) =>
                         setSelectedDepartment(Number(e.target.value))
                     }
@@ -256,11 +229,13 @@ const EditPersonRecordForm = ({ person }: Props) => {
                         </option>
                     ))}
                 </select>
-            </label>
-            <label>
-                Team:
+            </div>
+
+            <div className="mb-3">
+                <label className="form-label">Team</label>
                 <select
                     name="Team"
+                    className="form-select"
                     value={selectedTeam ?? ""}
                     onChange={(e) => setSelectedTeam(Number(e.target.value))}
                 >
@@ -271,8 +246,11 @@ const EditPersonRecordForm = ({ person }: Props) => {
                         </option>
                     ))}
                 </select>
-            </label>
-            <input type="submit" defaultValue="submit"></input>
+            </div>
+
+            <button type="submit" className="btn btn-primary">
+                Save
+            </button>
         </form>
     );
 };
