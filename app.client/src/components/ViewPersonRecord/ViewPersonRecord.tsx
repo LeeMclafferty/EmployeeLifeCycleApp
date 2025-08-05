@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { getDisplayName } from "../../helpers/FormattingHelpers";
 import { type PersonRecord } from "../../types/PersonRecordType";
+import "./ViewPersonRecord.css";
 
 type Props = {
     person: PersonRecord;
@@ -14,112 +15,118 @@ const ViewPersonRecord = ({ person }: Props) => {
 
     return (
         <>
-            <button onClick={handleEditClick}>Edit</button>
-            <form id="view PersonForm">
-                <div>
-                    <label>
-                        Display Name:
-                        <span> {getDisplayName(person)}</span>
-                    </label>
+            <div className="outter">
+                <div className="view-container card">
+                    <div className="btn-container">
+                        <button
+                            className="btn btn-primary edit-btn"
+                            onClick={handleEditClick}
+                        >
+                            Edit
+                        </button>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Display Name:</div>
+                            <div className="read-data">
+                                {getDisplayName(person)}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">First Name:</div>
+                            <div className="read-data">{person.firstName}</div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Middle Name:</div>
+                            <div className="read-data">{person.middleName}</div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Last Name:</div>
+                            <div className="read-data">{person.lastName}</div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Preferred Name:</div>
+                            <div className="read-data">
+                                {person.preferredName}
+                            </div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Initials:</div>
+                            <div className="read-data">{person.initials}</div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Start Date:</div>
+                            <div className="read-data">
+                                {person.startDate
+                                    ? person.startDate.split("T")[0]
+                                    : ""}
+                            </div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">End Date:</div>
+                            <div className="read-data">
+                                {person.endDate
+                                    ? person.endDate.split("T")[0]
+                                    : ""}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Email:</div>
+                            <div className="read-data">
+                                {person.emailAddress}
+                            </div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Phone Number:</div>
+                            <div className="read-data">
+                                {person.phoneNumber}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Desk Number:</div>
+                            <div className="read-data">{person.deskNumber}</div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Location:</div>
+                            <div className="read-data">
+                                {person.isFullyRemote ? "Remote" : "In Office"}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Job Title:</div>
+                            <div className="read-data">{person.jobTitle}</div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Job Level:</div>
+                            <div className="read-data">{person.jobLevel}</div>
+                        </div>
+                    </div>
+                    <div className="read-group">
+                        <div className="read-container">
+                            <div className="read-header">Department:</div>
+                            <div className="read-data">
+                                {person.department?.displayName}
+                            </div>
+                        </div>
+                        <div className="read-container">
+                            <div className="read-header">Team:</div>
+                            <div className="read-data">{person.team?.name}</div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label>
-                        First Name:
-                        <span> {person.firstName} </span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Middle Name:
-                        <span> {person.middleName}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Last Name:
-                        <span> {person.lastName}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Preferred Name:
-                        <span> {person.preferredName}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        initials:
-                        <span> {person.initials}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Start Date:
-                        <span>
-                            {" "}
-                            {person.startDate
-                                ? person.startDate.split("T")[0]
-                                : ""}
-                        </span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        End Date:
-                        <span>
-                            {" "}
-                            {person.endDate
-                                ? person.endDate.split("T")[0]
-                                : ""}{" "}
-                        </span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Email:
-                        <span> {person.emailAddress}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Phone Number:
-                        <span> {person.phoneNumber}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Desk Number:
-                        <span> {person.deskNumber}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Fully Remote:
-                        <span>
-                            {" "}
-                            {person.isFullyRemote ? "Remote" : "In Office"}
-                        </span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Job Title:
-                        <span> {person.jobTitle}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Job Level:
-                        <span> {person.jobLevel}</span>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Department:
-                        <span> {person.department?.displayName}</span>
-                    </label>
-                </div>
-            </form>
+            </div>
         </>
     );
 };

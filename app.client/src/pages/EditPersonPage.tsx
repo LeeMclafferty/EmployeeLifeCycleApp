@@ -5,6 +5,7 @@ import { getPersonRecordById } from "../api/personRecordApi";
 import { type PersonRecord } from "../types/PersonRecordType";
 import "./pageCSS/pages.css";
 import "./pageCSS/EditPersonPage.css";
+import { getDisplayName } from "../helpers/FormattingHelpers";
 
 const EditPersonPage = () => {
     const { personId } = useParams();
@@ -31,7 +32,7 @@ const EditPersonPage = () => {
     return (
         <>
             <div className="main">
-                <h1>Edit Person Page</h1>
+                <h1>Editing {getDisplayName(personRecord)}</h1>
                 <h4>Make changes to an existing person</h4>
 
                 <EditPersonRecordForm person={personRecord} />

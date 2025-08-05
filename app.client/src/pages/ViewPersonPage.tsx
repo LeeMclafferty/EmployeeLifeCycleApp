@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getPersonRecordById } from "../api/personRecordApi";
 import { type PersonRecord } from "../types/PersonRecordType";
 import ViewPersonRecord from "../components/ViewPersonRecord/ViewPersonRecord";
+import { getDisplayName } from "../helpers/FormattingHelpers";
 
 const ViewPersonPage = () => {
     const { personId } = useParams();
@@ -28,7 +29,7 @@ const ViewPersonPage = () => {
 
     return (
         <>
-            <h1>View Person Page</h1>
+            <h1>Viewing {getDisplayName(personRecord)}</h1>
             <h4>See all of the details for the person</h4>
             <ViewPersonRecord person={personRecord} />
         </>

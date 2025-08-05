@@ -1,0 +1,50 @@
+.view-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1050px;
+    margin: 50px auto;
+    color: #111;
+}
+
+/* Groups should arrange their containers side by side */
+.read-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+}
+
+/* Containers are columns: label above value OR inline */
+.read-container {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex: 1;
+}
+
+/* Label styling */
+.read-header {
+    font-weight: 600;
+}
+
+/* Value styling */
+.read-data {
+    flex: 1;
+    text-align: left;
+    border: #cac9c9 1px solid;
+    border-radius: 4px;
+    max-width: 200px;
+    padding-left: 4px;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.edit-btn {
+    max-width: 100px;
+    width: 100%;
+}
