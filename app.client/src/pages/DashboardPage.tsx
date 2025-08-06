@@ -72,69 +72,79 @@ const DashboardPage = () => {
 
     return (
         <>
-            <div>
-                <h1>Dashboard Page</h1>
-                <h4>An overview of all users and tasks</h4>
-            </div>
-            <div className="graphs">
-                <div className="card graph-card">
-                    <ProgressCircle value={completion} />
-                    <div className="card-text">
-                        <div className="stat-number">
-                            {Math.ceil(completion)}%
-                        </div>
-                        <div className="stat-text">Onboarding Completion</div>
+            <div className="page-container">
+                <div className="outter">
+                    <div>
+                        <h1>Dashboard Page</h1>
+                        <h4>An overview of all users and tasks</h4>
                     </div>
-                </div>
-                <div className="card graph-card">
-                    <PieChart
-                        data={[
-                            {
-                                value:
-                                    phaseCounts[Number(LifeCyclePhase.Draft)] ??
-                                    0,
-                                color: "#FFC154",
-                            },
-                            {
-                                value:
-                                    phaseCounts[
-                                        Number(LifeCyclePhase.Onboarding)
-                                    ] ?? 0,
-                                color: "#4778b3ff",
-                            },
-                            {
-                                value:
-                                    phaseCounts[
-                                        Number(LifeCyclePhase.Active)
-                                    ] ?? 0,
-                                color: "#47B39C",
-                            },
-                            {
-                                value:
-                                    phaseCounts[
-                                        Number(LifeCyclePhase.Offboarded)
-                                    ] ?? 0,
-                                color: "#EC6B56",
-                            },
-                        ]}
-                    />
-                    <PieLegend items={legendItems} />
-                </div>
-                <div className="card graph-card btn-card">
-                    <button className="card-btn" id="phase-btn">
-                        Change
-                        <br />
-                        Phase
-                    </button>
-                    <button className="card-btn" id="export-btn">
-                        Export
-                        <br />
-                        Data
-                    </button>
+                    <div className="graphs">
+                        <div className="card graph-card">
+                            <ProgressCircle value={completion} />
+                            <div className="card-text">
+                                <div className="stat-number">
+                                    {Math.ceil(completion)}%
+                                </div>
+                                <div className="stat-text">
+                                    Onboarding Completion
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card graph-card">
+                            <PieChart
+                                data={[
+                                    {
+                                        value:
+                                            phaseCounts[
+                                                Number(LifeCyclePhase.Draft)
+                                            ] ?? 0,
+                                        color: "#FFC154",
+                                    },
+                                    {
+                                        value:
+                                            phaseCounts[
+                                                Number(
+                                                    LifeCyclePhase.Onboarding
+                                                )
+                                            ] ?? 0,
+                                        color: "#4778b3ff",
+                                    },
+                                    {
+                                        value:
+                                            phaseCounts[
+                                                Number(LifeCyclePhase.Active)
+                                            ] ?? 0,
+                                        color: "#47B39C",
+                                    },
+                                    {
+                                        value:
+                                            phaseCounts[
+                                                Number(
+                                                    LifeCyclePhase.Offboarded
+                                                )
+                                            ] ?? 0,
+                                        color: "#EC6B56",
+                                    },
+                                ]}
+                            />
+                            <PieLegend items={legendItems} />
+                        </div>
+                        <div className="card graph-card btn-card">
+                            <button className="card-btn" id="phase-btn">
+                                Change
+                                <br />
+                                Phase
+                            </button>
+                            <button className="card-btn" id="export-btn">
+                                Export
+                                <br />
+                                Data
+                            </button>
+                        </div>
+                    </div>
+                    <PersonRecordList />
                 </div>
             </div>
-
-            <PersonRecordList />
         </>
     );
 };

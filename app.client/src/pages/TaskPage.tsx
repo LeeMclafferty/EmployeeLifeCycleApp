@@ -28,9 +28,13 @@ const TaskPage = () => {
     }
     return (
         <>
-            <h1>Task Page</h1>
-            <h4>Complete task and stay up to date with progress</h4>
-            <TaskList personRecord={personRecord} />
+            <div className="page-container">
+                <div className="outter">
+                    <h1>Task Page</h1>
+                    <h4>Complete task and stay up to date with progress</h4>
+                    <TaskList personRecord={personRecord} />
+                </div>
+            </div>
         </>
     );
 };

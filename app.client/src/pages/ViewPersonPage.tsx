@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getPersonRecordById } from "../api/personRecordApi";
 import { type PersonRecord } from "../types/PersonRecordType";
 import ViewPersonRecord from "../components/ViewPersonRecord/ViewPersonRecord";
-import { getDisplayName } from "../helpers/FormattingHelpers";
+import "./pageCSS/pages.css";
+import { getPersonRecordById } from "../api/PersonRecordApi";
+import { getDisplayName } from "../helpers/formattingHelpers";
 
 const ViewPersonPage = () => {
     const { personId } = useParams();
@@ -29,9 +30,13 @@ const ViewPersonPage = () => {
 
     return (
         <>
-            <h1>Viewing {getDisplayName(personRecord)}</h1>
-            <h4>See all of the details for the person</h4>
-            <ViewPersonRecord person={personRecord} />
+            <div className="page-container">
+                <div className="outter">
+                    <h1>Viewing {getDisplayName(personRecord)}</h1>
+                    <h4>See all of the details for the person</h4>
+                    <ViewPersonRecord person={personRecord} />
+                </div>
+            </div>
         </>
     );
 };

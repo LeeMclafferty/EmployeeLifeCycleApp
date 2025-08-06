@@ -31,11 +31,12 @@ const EditPersonPage = () => {
 
     return (
         <>
-            <div className="main">
-                <h1>Editing {getDisplayName(personRecord)}</h1>
-                <h4>Make changes to an existing person</h4>
-
-                <EditPersonRecordForm person={personRecord} />
+            <div className="page-container">
+                <div className="outter">
+                    <h1>Editing {getDisplayName(personRecord)}</h1>
+                    <h4>Make changes to an existing person</h4>
+                    <EditPersonRecordForm person={personRecord} />
+                </div>
             </div>
         </>
     );
