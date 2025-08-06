@@ -120,7 +120,18 @@ const DashboardPage = () => {
                     />
                     <PieLegend items={legendItems} />
                 </div>
-                <div className="card graph-card"></div>
+                <div className="card graph-card btn-card">
+                    <button className="card-btn" id="phase-btn">
+                        Change
+                        <br />
+                        Phase
+                    </button>
+                    <button className="card-btn" id="export-btn">
+                        Export
+                        <br />
+                        Data
+                    </button>
+                </div>
             </div>
 
             <PersonRecordList />

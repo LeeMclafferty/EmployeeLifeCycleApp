@@ -32,7 +32,7 @@
 .read-data {
     flex: 1;
     text-align: left;
-    border: #cac9c9 1px solid;
+    border-bottom: #cac9c9 1px solid;
     border-radius: 4px;
     max-width: 200px;
     padding-left: 4px;
