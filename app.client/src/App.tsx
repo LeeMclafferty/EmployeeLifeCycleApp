@@ -15,7 +15,7 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<MainLayout />}>
                     <Route index element={<DashboardPage />} />
-                    <Route path="Person/Add" element={<AddPersonPage />} />
+                    <Route path="Person/Create" element={<AddPersonPage />} />
                     <Route
                         path="Person/Edit/:personId"
                         element={<EditPersonPage />}

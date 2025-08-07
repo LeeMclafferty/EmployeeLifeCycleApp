@@ -9,6 +9,8 @@ import { type AssignedTask, TaskPhase } from "../types/TaskDataTypes.ts";
 import { LifeCyclePhase, type PersonRecord } from "../types/PersonRecordType";
 import { getPersonRecords } from "../api/PersonRecordApi";
 import PieLegend from "../components/PieChart/PieLegend.tsx";
+import Modal from "../components/Modal/Modal.tsx";
+import ChangePhaseModal from "../components/Modal/Content/ChangePhaseModal.tsx";
 
 // Pie chart: number of employees per status
 // Progress circle: % completion of current employees being onboarded.
@@ -23,6 +25,7 @@ const legendItems = [
 const DashboardPage = () => {
     const [completion, setCompletion] = useState(0);
     const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
+    const [isPhaseChangeOpen, setIsPhaseChangeOpen] = useState<boolean>(false);
 
     const calculateOnboardingCompletion = async () => {
         try {
@@ -69,6 +72,10 @@ const DashboardPage = () => {
         console.log(acc);
         return acc;
     }, {} as Record<number, number>);
+
+    const closeModal = () => {
+        setIsPhaseChangeOpen(false);
+    };
 
     return (
         <>
@@ -130,7 +137,11 @@ const DashboardPage = () => {
                             <PieLegend items={legendItems} />
                         </div>
                         <div className="card graph-card btn-card">
-                            <button className="card-btn" id="phase-btn">
+                            <button
+                                className="card-btn"
+                                id="phase-btn"
+                                onClick={() => setIsPhaseChangeOpen(true)}
+                            >
                                 Change
                                 <br />
                                 Phase
@@ -145,6 +156,10 @@ const DashboardPage = () => {
                     <PersonRecordList />
                 </div>
             </div>
+
+            <Modal isOpen={isPhaseChangeOpen} onClose={closeModal}>
+                <ChangePhaseModal PersonRecords={personRecords} />
+            </Modal>
         </>
     );
 };
