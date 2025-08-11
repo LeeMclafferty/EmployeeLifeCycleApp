@@ -46,6 +46,5 @@ export const apiRequest = async <TResponse, TBody = undefined>(
         throw new Error(errMsg);
     }
 
-
     return await res.json();
 };

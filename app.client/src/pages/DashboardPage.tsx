@@ -51,17 +51,15 @@ const DashboardPage = () => {
         }
     };
 
+    const refreshPersonRecords = async () => {
+        const data = await getPersonRecords();
+        setPersonRecords(data);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const records = await getPersonRecords();
-                setPersonRecords(records);
-
-                const percent = await calculateOnboardingCompletion();
-                setCompletion(percent);
-            } catch (err) {
-                console.error("Error loading dashboard data:", err);
-            }
+            await refreshPersonRecords();
+            setCompletion(await calculateOnboardingCompletion());
         };
         fetchData();
     }, []);
@@ -69,7 +67,6 @@ const DashboardPage = () => {
     const phaseCounts = personRecords.reduce((acc, person) => {
         const phaseKey = Number(person.phase);
         acc[phaseKey] = (acc[phaseKey] || 0) + 1;
-        console.log(acc);
         return acc;
     }, {} as Record<number, number>);
 
@@ -153,12 +150,15 @@ const DashboardPage = () => {
                             </button>
                         </div>
                     </div>
-                    <PersonRecordList />
+                    <PersonRecordList personRecords={personRecords} />
                 </div>
             </div>
 
             <Modal isOpen={isPhaseChangeOpen} onClose={closeModal}>
-                <ChangePhaseModal PersonRecords={personRecords} />
+                <ChangePhaseModal
+                    personRecords={personRecords}
+                    onPhaseChangeComplete={refreshPersonRecords}
+                />
             </Modal>
         </>
     );

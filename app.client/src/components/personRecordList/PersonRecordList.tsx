@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react";
-import { getPersonRecords } from "../../api/PersonRecordApi";
 import { type PersonRecord } from "../../types/PersonRecordType";
 import { getDisplayName, formatPhase } from "../../helpers/formattingHelpers";
 import "./PersonRecordList.css";
 
-const PersonRecordList = () => {
-    const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
-    useEffect(() => {
-        getPersonRecords().then((data) => {
-            setPersonRecords(data);
-        });
-    }, []);
+type Props = { personRecords: PersonRecord[] };
 
+const PersonRecordList = ({ personRecords }: Props) => {
     const formatHeader = (header: string) => {
         const spacedString = header.replace(/([a-z])([A-Z])/g, "$1 $2");
         const slicedFirstChar = spacedString.slice(1);

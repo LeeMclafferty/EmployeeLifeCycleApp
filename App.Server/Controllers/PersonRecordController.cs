@@ -94,5 +94,21 @@ namespace App.Server.Controllers
             await _context.SaveChangesAsync();
             return Ok(personRecord);
         }
+
+        [HttpPut("{id:int}/phase")]
+        public async Task<IActionResult> UpdatePhase(int id, [FromBody] PhaseUpdateDto dto)
+        {
+            var existing = await _context.PersonRecords.FindAsync(id);
+            if (existing == null) return NotFound(new { message = "Person not found" });
+
+            existing.Phase = dto.Phase;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        public sealed class PhaseUpdateDto
+        {
+            public LifeCyclePhase Phase { get; set; }
+        }
     }
 }

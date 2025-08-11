@@ -29,5 +29,5 @@ export type PersonRecord = {
     department: Department | null;
     teamId: number | null;
     team: Team | null;
-    phase: LifeCyclePhase.Draft;
+    phase: LifeCyclePhase;
 };
