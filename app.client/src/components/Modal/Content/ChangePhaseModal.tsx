@@ -117,7 +117,7 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
                                     )}
                                     onChange={() => toggleCheckbox(r)}
                                 />
-                                <p className="name">{getDisplayName(r)}</p>
+                                <p className="name">{`${getDisplayName(r)}`}</p>
                                 <input
                                     type="text"
                                     placeholder="Additional Information"
