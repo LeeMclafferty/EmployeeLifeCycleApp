@@ -1,5 +1,6 @@
 ﻿using App.Server.Data;
 using App.Server.Models;
+using App.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static App.Server.Models.PersonRecord;
@@ -11,9 +12,11 @@ namespace App.Server.Controllers
     public class PersonRecordController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public PersonRecordController(AppDbContext context) 
+        private readonly PersonLifecycleService _personLifecycleService;
+        public PersonRecordController(AppDbContext context, PersonLifecycleService personLifecycleService) 
         { 
             _context = context;
+            _personLifecycleService = personLifecycleService;
         }
 
         [HttpPost("Create")]
@@ -96,14 +99,26 @@ namespace App.Server.Controllers
         }
 
         [HttpPut("{id:int}/phase")]
-        public async Task<IActionResult> UpdatePhase(int id, [FromBody] PhaseUpdateDto dto)
+        public async Task<IActionResult> UpdatePhase(int id, [FromBody] PhaseUpdateDto dto, CancellationToken ct)
         {
-            var existing = await _context.PersonRecords.FindAsync(id);
-            if (existing == null) return NotFound(new { message = "Person not found" });
+            var result = await _personLifecycleService.SetPhaseAsync(id, dto.Phase, ct);
 
-            existing.Phase = dto.Phase;
-            await _context.SaveChangesAsync();
-            return NoContent();
+            if (result.Success)
+                return Ok(new
+                {
+                    success = true,
+                    tasksCreated = result.TasksCreated,
+                    message = result.ErrorMessage, // contains success text in the service
+                    phase = dto.Phase.ToString()
+                });
+
+            return result.ErrorMessage switch
+            {
+                "Person not found" => NotFound(new ProblemDetails { Title = "Not found", Detail = result.ErrorMessage }),
+                "Person has no department" => BadRequest(new ProblemDetails { Title = "Invalid state", Detail = result.ErrorMessage }),
+                "No templates configured for this department" => Conflict(new ProblemDetails { Title = "Configuration missing", Detail = result.ErrorMessage }),
+                _ => StatusCode(500, new ProblemDetails { Title = "Server error", Detail = result.ErrorMessage }),
+            };
         }
 
         public sealed class PhaseUpdateDto

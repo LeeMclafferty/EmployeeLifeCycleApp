@@ -1,5 +1,6 @@
 
 using App.Server.Data;
+using App.Server.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Server
@@ -41,6 +42,8 @@ namespace App.Server
                           .AllowAnyMethod();
                 });
             });
+
+            builder.Services.AddScoped<PersonLifecycleService>();
 
             var app = builder.Build();
 

@@ -1,106 +1,112 @@
 ﻿using App.Server.Data;
 using App.Server.Models;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient; // for unique-key detection
 using static App.Server.Models.PersonRecord;
 
 namespace App.Server.Services
 {
-    public class PersonLifecycleServices
+    public class PersonLifecycleService
     {
-
-        public record PhaseChangeResult(
-            bool Success, int TasksCreated, string? ErrorMessage
-            );
+        public record PhaseChangeResult(bool Success, int TasksCreated, string? ErrorMessage);
 
         private readonly AppDbContext _context;
-        private readonly ILogger<PersonLifecycleServices> _logger;
+        private readonly ILogger<PersonLifecycleService> _logger;
 
-        PersonLifecycleServices(AppDbContext context, ILogger<PersonLifecycleServices> logger)
+        public PersonLifecycleService(AppDbContext context, ILogger<PersonLifecycleService> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-
         public async Task<PhaseChangeResult> SetPhaseAsync(int personId, LifeCyclePhase newPhase, CancellationToken ct)
         {
-            await using var tx = await _context.Database.BeginTransactionAsync(ct);
-
-            var person = await _context.PersonRecords
-                .FirstOrDefaultAsync(p => p.Id == personId, ct);
+            var person = await _context.PersonRecords.FirstOrDefaultAsync(p => p.Id == personId, ct);
             if (person == null) return new(false, 0, "Person not found");
             if (person.DepartmentId == null) return new(false, 0, "Person has no department");
 
-            // If not moving to Onboarding, just update phase.
+            // If not moving to Onboarding, just update phase (no transaction needed)
             if (newPhase != LifeCyclePhase.Onboarding)
             {
+                if(person.Phase == LifeCyclePhase.Onboarding)
+                {
+                    await _context.AssignedTask
+                        .Where(a => a.NewHireId == personId)
+                        .ExecuteDeleteAsync(ct);
+                }
                 person.Phase = newPhase;
                 await _context.SaveChangesAsync(ct);
-                await tx.CommitAsync(ct);
-                return new(true, 0, "Updated phase successfully");
+                return new(true, 0, "Phase updated");
             }
 
-            // If already Onboarding, nothing to do.
+            // Already Onboarding — nothing to do
             if (person.Phase == LifeCyclePhase.Onboarding)
-            {
-                await tx.CommitAsync(ct);
                 return new(true, 0, "Already in Onboarding");
-            }
 
-            // 1) candidates (templates applicable to this person's department)
+            // Find templates applicable to this person's department (many-to-many nav)
             var candidates = await _context.TaskTemplates
                 .AsNoTracking()
-                .Where(t => t.ApplicableDepartments.Any(d => d.Id == person.DepartmentId))
-                .Select(t => new
-                {
-                    TemplateId = t.Id,
-                    t.Title,
-                    t.Description
-                })
+                .Where(tt => tt.ApplicableDepartments.Any(d => d.Id == person.DepartmentId))
+                .Select(tt => new { tt.Id })
                 .ToListAsync(ct);
 
-            var templateIds = candidates.Select(c => c.TemplateId).Distinct().ToList();
+            if (candidates.Count == 0)
+                return new(false, 0, "No templates configured for this department");
 
-            // If no templates, still allow phase change with 0 tasks.
-            if (templateIds.Count == 0)
-            {
-                person.Phase = LifeCyclePhase.Onboarding;
-                await _context.SaveChangesAsync(ct);
-                await tx.CommitAsync(ct);
-                return new(true, 0, "No templates for department; phase updated with 0 tasks");
-            }
+            var templateIds = candidates.Select(c => c.Id).Distinct().ToList();
 
-            // 2) E: which template IDs already exist for this person
-            var existingIds = await _context.AssignedTask
-                .AsNoTracking()
-                .Where(a => a.NewHireId == personId && templateIds.Contains(a.TaskTemplateId))
-                .Select(a => a.TaskTemplateId)
-                .ToListAsync(ct);
-            var existing = new HashSet<int>(existingIds);
-
-            // 3) M: missing templates we must create now
-            var missing = candidates.Where(c => !existing.Contains(c.TemplateId)).ToList();
-
-            // 4) Map M -> AssignedTask (defaults only)
-            foreach (var m in missing)
-            {
-                _context.AssignedTask.AddAsync(new AssignedTask
-                {
-                    NewHireId = personId,
-                    TaskTemplateId = m.TemplateId,
-                    IsComplete = false, // adjust enum/name
-                    CompletedAt = null,
-                    Notes = null
-            }
-
-            // 5) Update phase and commit atomically
-            person.Phase = LifeCyclePhase.Onboarding;
-
+            // One transaction for both: create tasks (idempotent) + set phase
+            await using var tx = await _context.Database.BeginTransactionAsync(ct);
             try
             {
+                // Re-check existing inside the transaction to minimize race window
+                var existingIds = await _context.AssignedTask.AsNoTracking()
+                    .Where(a => a.NewHireId == personId && templateIds.Contains(a.TaskTemplateId))
+                    .Select(a => a.TaskTemplateId)
+                    .ToListAsync(ct);
+
+                var missingIds = templateIds.Except(existingIds).ToList();
+
+                if (missingIds.Count > 0)
+                {
+                    var newTasks = missingIds.Select(id => new AssignedTask
+                    {
+                        NewHireId = personId,
+                        TaskTemplateId = id,
+                        IsComplete = false,
+                        CompletedAt = null,
+                        Notes = null
+                    }).ToList();
+
+                    await _context.AssignedTask.AddRangeAsync(newTasks, ct);
+                }
+
+                person.Phase = LifeCyclePhase.Onboarding;
+
+                var tasksCreated = missingIds.Count;
                 await _context.SaveChangesAsync(ct);
                 await tx.CommitAsync(ct);
-                return new(true, missing.Count, $"Created {missing.Count} tasks");
+
+                _logger.LogInformation("Onboarding tasks created: {Count} for person {PersonId} in dept {DeptId}",
+                    tasksCreated, personId, person.DepartmentId);
+
+                return new(true, tasksCreated, tasksCreated == 0
+                    ? "Phase updated; tasks already existed"
+                    : $"Created {tasksCreated} tasks");
+            }
+            catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
+            {
+                // Race: another request inserted tasks first. Treat as success; just set phase.
+                await tx.RollbackAsync(ct);
+
+                await using var tx2 = await _context.Database.BeginTransactionAsync(ct);
+                var fresh = await _context.PersonRecords.FirstAsync(p => p.Id == personId, ct);
+                fresh.Phase = LifeCyclePhase.Onboarding;
+                await _context.SaveChangesAsync(ct);
+                await tx2.CommitAsync(ct);
+
+                _logger.LogInformation("Phase set to Onboarding after unique-key race for person {PersonId}", personId);
+                return new(true, 0, "Phase updated; tasks already existed");
             }
             catch (DbUpdateException ex)
             {
@@ -110,5 +116,7 @@ namespace App.Server.Services
             }
         }
 
+        private static bool IsUniqueConstraintViolation(DbUpdateException ex) =>
+            ex.InnerException is SqlException sql && (sql.Number == 2627 || sql.Number == 2601);
     }
 }
