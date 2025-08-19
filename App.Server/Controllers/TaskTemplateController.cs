@@ -31,7 +31,7 @@ namespace App.Server.Controllers
         public async Task<ActionResult<List<TaskTemplate>>> GetAll()
         {
             var taskList = await _context.TaskTemplates.ToListAsync();
-            if (taskList.IsNullOrEmpty())
+            if (taskList == null)
                 return NotFound(new { message = "Unable to fetch all task templates"});
             
             return Ok(taskList);
@@ -47,6 +47,11 @@ namespace App.Server.Controllers
 
             var taskTemplate = request.TaskTemplate;
             var departmentIds = request.DepartmentIds ?? new List<int>();
+
+            if(taskTemplate == null || departmentIds.Count == 0)
+            {
+                return BadRequest("Task template and department IDs are required.");
+            }
 
             // Fetch departments by IDs
             var departments = await _context.Departments

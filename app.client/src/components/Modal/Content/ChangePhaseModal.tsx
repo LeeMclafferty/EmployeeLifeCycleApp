@@ -6,6 +6,12 @@ import {
 import { getDisplayName } from "../../../helpers/formattingHelpers";
 import "./ChangePhaseModal.css";
 import { updatePersonRecordPhase } from "../../../api/PersonRecordApi";
+import {
+    MICROSOFT_CHANNEL_ID,
+    MICROSOFT_TEAM_ID,
+} from "../../../constants/constants";
+import { type NotifyBody } from "../../../types/NotifyTypes";
+import { sendTeamsNotification } from "../../../api/NoifyApi";
 
 type Props = {
     personRecords: PersonRecord[];
@@ -38,27 +44,76 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
         console.log(selectedRecords);
     };
 
+    const channelForPhase = (
+        phase: LifeCyclePhase
+    ): { teamId: string; channelId: string } | null => {
+        switch (phase) {
+            case LifeCyclePhase.Onboarding:
+                return {
+                    teamId: MICROSOFT_TEAM_ID,
+                    channelId: MICROSOFT_CHANNEL_ID.onboarding,
+                };
+            case LifeCyclePhase.Offboarded:
+                return {
+                    teamId: MICROSOFT_TEAM_ID,
+                    channelId: MICROSOFT_CHANNEL_ID.offboarding,
+                };
+            default:
+                return null;
+        }
+    };
+
     const onSubmitClick = async () => {
         setSaving(true);
         setErrors({});
 
+        // keep only records with a concrete id; narrow the type so TS knows id is number
+        const updatable = selectedRecords.filter(
+            (r): r is (typeof selectedRecords)[number] & { id: number } =>
+                r.id != null
+        );
+        type Rec = (typeof updatable)[number];
+
         const results = await Promise.allSettled(
-            selectedRecords
-                .filter((r) => r.id != null)
-                .map((r) => updatePersonRecordPhase(r.id!, selectedPhase))
+            updatable.map((r) => updatePersonRecordPhase(r.id, selectedPhase))
         );
 
+        // build error map + collect successes
         const errs: Record<number, string> = {};
+        const successRecs: Rec[] = [];
         results.forEach((res, i) => {
-            const id = selectedRecords.filter((r) => r.id != null)[i].id!;
-            if (res.status === "rejected") errs[id] = String(res.reason);
+            const rec = updatable[i];
+            if (res.status === "rejected") {
+                errs[rec.id] = String(res.reason);
+            } else {
+                successRecs.push(rec);
+            }
         });
 
         setErrors(errs);
         setSaving(false);
+
+        // keep only failures selected so user can retry them
         setSelectedRecords((prev) =>
             prev.filter((r) => r.id != null && errs[r.id!])
         );
+
+        // ---- notify (only if the phase maps to a channel and we had successes)
+        const route = channelForPhase(selectedPhase);
+        if (route && successRecs.length > 0) {
+            const names = successRecs.map(
+                (r) => (r as PersonRecord).preferredName ?? `ID ${r.id}`
+            );
+            const messageHtml =
+                `🆕 <b>${names.length}</b> moved to <b>${selectedPhase}</b>` +
+                (names.length <= 5 ? `: ${names.join(", ")}` : "");
+
+            try {
+                await sendTeamsNotification({ ...route, messageHtml });
+            } catch (e) {
+                console.error("Teams notify failed:", e);
+            }
+        }
 
         onPhaseChangeComplete();
     };

@@ -2,6 +2,9 @@
 using App.Server.Data;
 using App.Server.Services;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
+using Azure.Identity;
+using Microsoft.Graph;
 
 namespace App.Server
 {
@@ -9,10 +12,23 @@ namespace App.Server
     {
         public static void Main(string[] args)
         {
+            Env.Load(); // Load .env file if present
+            var tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
+                ?? throw new InvalidOperationException("TENANT_ID environment variable not set.");
+            var clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
+                ?? throw new InvalidOperationException("CLIENT_ID environment variable not set.");
+            var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
+                ?? throw new InvalidOperationException("CLIENT_SECRET environment variable not set.");
+
+            var credntials = new ClientSecretCredential(
+                tenantId, clientId, clientSecret);
+
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // App-only credential for Graph
+            builder.Services.AddSingleton(credntials);
 
+            // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
