@@ -101,15 +101,30 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
         // ---- notify (only if the phase maps to a channel and we had successes)
         const route = channelForPhase(selectedPhase);
         if (route && successRecs.length > 0) {
-            const names = successRecs.map(
-                (r) => (r as PersonRecord).preferredName ?? `ID ${r.id}`
-            );
-            const messageHtml =
-                `🆕 <b>${names.length}</b> moved to <b>${selectedPhase}</b>` +
-                (names.length <= 5 ? `: ${names.join(", ")}` : "");
+            // sort by start date (earliest first)
+            const sorted = [...successRecs].sort((a, b) => {
+                const da = a.startDate ? new Date(a.startDate).getTime() : 0;
+                const db = b.startDate ? new Date(b.startDate).getTime() : 0;
+                return da - db;
+            });
+
+            const rows = sorted.map((r) => {
+                const dept = r.department?.displayName ?? "Unknown Dept";
+                const name = getDisplayName(r);
+                const start = r.startDate
+                    ? new Date(r.startDate).toLocaleDateString()
+                    : "No Start Date";
+                const link = `<a href="https://localhost:49866/Task/${r.id}">${name}</a>`;
+                return `${dept} – ${link} ${start}`;
+            });
+
+            const messageHtml = `
+                <b>New Team Member(s):</b><br/>
+                ${rows.join("<br/>")}
+                `;
 
             try {
-                await sendTeamsNotification({ ...route, messageHtml });
+                await sendTeamsNotification({ messageHtml });
             } catch (e) {
                 console.error("Teams notify failed:", e);
             }

@@ -1,7 +1,5 @@
 export type NotifyBody = {
-    teamId: string; // Team you want to post to
-    channelId: string; // e.g. CHANNELS.onboarding
-    messageHtml: string; // formatted message
+    messageHtml: string;
 };
 
-export type NotifyResult = { status: string }; // backend returns { status: "ok" }
+export type NotifyResult = { status: string }; // e.g. "sent"

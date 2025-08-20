@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace App.Server.Controllers
 {
@@ -8,26 +10,28 @@ namespace App.Server.Controllers
     [Route("api/notify")]
     public class NotifyController : ControllerBase
     {
-        private readonly GraphServiceClient _graph;
-        public NotifyController(GraphServiceClient graph) => _graph = graph;
+        private readonly HttpClient _http;
+        private readonly string _flowUrl = "https://prod-93.westus.logic.azure.com:443/workflows/26212596701846e1a7aa9c2e9c336e34/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=3jHszyqtF5mjzoLfLndsk5hxysPlvTAXc8lYyQYxWVc";
 
-        public record Payload(string TeamId, string ChannelId, string MessageHtml);
+        public NotifyController(HttpClient http) => _http = http;
+
+        public record Payload(string MessageHtml);
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Payload p)
         {
-            if (string.IsNullOrWhiteSpace(p.TeamId) ||
-                string.IsNullOrWhiteSpace(p.ChannelId) ||
-                string.IsNullOrWhiteSpace(p.MessageHtml))
-                return BadRequest("teamId, channelId, and messageHtml are required.");
+            if (string.IsNullOrWhiteSpace(p.MessageHtml))
+                return BadRequest("MessageHtml is required.");
 
-            var msg = new ChatMessage
-            {
-                Body = new ItemBody { ContentType = BodyType.Html, Content = p.MessageHtml }
-            };
+            var body = JsonSerializer.Serialize(new { p.MessageHtml });
+            var content = new StringContent(body, Encoding.UTF8, "application/json");
 
-            await _graph.Teams[p.TeamId].Channels[p.ChannelId].Messages.PostAsync(msg);
-            return Ok(new { status = "ok" });
+            var resp = await _http.PostAsync(_flowUrl, content);
+
+            if (!resp.IsSuccessStatusCode)
+                return StatusCode((int)resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
+            return Ok(new { status = "sent" });
         }
     }
 }
