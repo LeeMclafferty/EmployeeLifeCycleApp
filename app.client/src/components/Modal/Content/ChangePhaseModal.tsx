@@ -10,13 +10,13 @@ import {
     MICROSOFT_CHANNEL_ID,
     MICROSOFT_TEAM_ID,
 } from "../../../constants/constants";
-import { type NotifyBody } from "../../../types/NotifyTypes";
 import { sendTeamsNotification } from "../../../api/NoifyApi";
 
 type Props = {
     personRecords: PersonRecord[];
     onPhaseChangeComplete: () => void;
 };
+
 const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
     const [selectedRecords, setSelectedRecords] = useState<PersonRecord[]>([]);
     const [selectedPhase, setSelectedPhase] = useState<LifeCyclePhase>(
@@ -24,6 +24,7 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
     );
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState<Record<number, string>>({});
+    const [notes, setNotes] = useState<Record<number, string>>({});
 
     const displayRecords = useMemo(
         () => personRecords.filter((r) => r.phase !== selectedPhase),
@@ -35,18 +36,14 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
     }, [selectedPhase]);
 
     const toggleCheckbox = (p: PersonRecord) => {
-        setSelectedRecords(
-            (prev) =>
-                prev.some((x) => x.id === p.id) // already selected?
-                    ? prev.filter((x) => x.id !== p.id) // remove it
-                    : [...prev, p] // add it
+        setSelectedRecords((prev) =>
+            prev.some((x) => x.id === p.id)
+                ? prev.filter((x) => x.id !== p.id)
+                : [...prev, p]
         );
-        console.log(selectedRecords);
     };
 
-    const channelForPhase = (
-        phase: LifeCyclePhase
-    ): { teamId: string; channelId: string } | null => {
+    const channelForPhase = (phase: LifeCyclePhase) => {
         switch (phase) {
             case LifeCyclePhase.Onboarding:
                 return {
@@ -63,26 +60,24 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
         }
     };
 
-    const onSubmitClick = async () => {
-        setSaving(true);
-        setErrors({});
-
-        // keep only records with a concrete id; narrow the type so TS knows id is number
-        const updatable = selectedRecords.filter(
-            (r): r is (typeof selectedRecords)[number] & { id: number } =>
-                r.id != null
+    // --- helpers ---
+    const getUpdatableRecords = () =>
+        selectedRecords.filter(
+            (r): r is PersonRecord & { id: number } => r.id != null
         );
-        type Rec = (typeof updatable)[number];
 
+    const applyPhaseUpdates = async (
+        recs: (PersonRecord & { id: number })[]
+    ) => {
         const results = await Promise.allSettled(
-            updatable.map((r) => updatePersonRecordPhase(r.id, selectedPhase))
+            recs.map((r) => updatePersonRecordPhase(r.id, selectedPhase))
         );
 
-        // build error map + collect successes
         const errs: Record<number, string> = {};
-        const successRecs: Rec[] = [];
+        const successRecs: typeof recs = [];
+
         results.forEach((res, i) => {
-            const rec = updatable[i];
+            const rec = recs[i];
             if (res.status === "rejected") {
                 errs[rec.id] = String(res.reason);
             } else {
@@ -90,45 +85,73 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
             }
         });
 
+        return { errs, successRecs };
+    };
+
+    const buildMessageHtml = (records: (PersonRecord & { id: number })[]) => {
+        // sort by start date
+        const sorted = [...records].sort((a, b) => {
+            const da = a.startDate ? new Date(a.startDate).getTime() : 0;
+            const db = b.startDate ? new Date(b.startDate).getTime() : 0;
+            return da - db;
+        });
+
+        const rows = sorted.map((r) => {
+            const dept = r.department?.displayName ?? "Unknown Dept";
+            const name = getDisplayName(r);
+            const start = r.startDate
+                ? new Date(r.startDate).toLocaleDateString()
+                : "No Start Date";
+            const link = `<a href="https://yourapp.com/people/${r.id}">${name}</a>`;
+
+            let row = `<li>${dept} – ${link} ${start}`;
+
+            const note = r.id ? notes[r.id] : "";
+            if (note && note.trim() !== "") {
+                row += `<ul><li>${note}</li></ul>`;
+            }
+
+            row += `</li>`;
+            return row;
+        });
+
+        return `
+<b>New Team Member(s):</b>
+<ul>
+${rows.join("")}
+</ul>
+`;
+    };
+
+    const notifyTeams = async (records: (PersonRecord & { id: number })[]) => {
+        const route = channelForPhase(selectedPhase);
+        if (!route || records.length === 0) return;
+
+        const messageHtml = buildMessageHtml(records);
+        try {
+            await sendTeamsNotification({ messageHtml });
+        } catch (e) {
+            console.error("Teams notify failed:", e);
+        }
+    };
+
+    // --- main submit ---
+    const onSubmitClick = async () => {
+        setSaving(true);
+        setErrors({});
+
+        const updatable = getUpdatableRecords();
+        const { errs, successRecs } = await applyPhaseUpdates(updatable);
+
         setErrors(errs);
         setSaving(false);
 
-        // keep only failures selected so user can retry them
+        // keep only failures selected
         setSelectedRecords((prev) =>
             prev.filter((r) => r.id != null && errs[r.id!])
         );
 
-        // ---- notify (only if the phase maps to a channel and we had successes)
-        const route = channelForPhase(selectedPhase);
-        if (route && successRecs.length > 0) {
-            // sort by start date (earliest first)
-            const sorted = [...successRecs].sort((a, b) => {
-                const da = a.startDate ? new Date(a.startDate).getTime() : 0;
-                const db = b.startDate ? new Date(b.startDate).getTime() : 0;
-                return da - db;
-            });
-
-            const rows = sorted.map((r) => {
-                const dept = r.department?.displayName ?? "Unknown Dept";
-                const name = getDisplayName(r);
-                const start = r.startDate
-                    ? new Date(r.startDate).toLocaleDateString()
-                    : "No Start Date";
-                const link = `<a href="https://localhost:49866/Task/${r.id}">${name}</a>`;
-                return `${dept} – ${link} ${start}`;
-            });
-
-            const messageHtml = `
-                <b>New Team Member(s):</b><br/>
-                ${rows.join("<br/>")}
-                `;
-
-            try {
-                await sendTeamsNotification({ messageHtml });
-            } catch (e) {
-                console.error("Teams notify failed:", e);
-            }
-        }
+        await notifyTeams(successRecs);
 
         onPhaseChangeComplete();
     };
@@ -187,11 +210,18 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
                                     )}
                                     onChange={() => toggleCheckbox(r)}
                                 />
-                                <p className="name">{`${getDisplayName(r)}`}</p>
+                                <p className="name">{getDisplayName(r)}</p>
                                 <input
                                     type="text"
                                     placeholder="Additional Information"
-                                    className="info"
+                                    value={notes[r.id ?? -1] ?? ""}
+                                    onChange={(e) =>
+                                        r.id != null &&
+                                        setNotes((prev) => ({
+                                            ...prev,
+                                            [r.id!]: e.target.value,
+                                        }))
+                                    }
                                 />
                             </div>
                         </div>
