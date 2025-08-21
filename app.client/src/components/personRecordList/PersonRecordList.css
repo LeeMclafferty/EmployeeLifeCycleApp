@@ -30,6 +30,8 @@ thead {
 }
 .table td {
     vertical-align: middle;
+    font-size: 18px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 a.text-primary {
     text-decoration: none;
@@ -41,4 +43,5 @@ a.text-primary:hover {
 .table th,
 .table td {
     border-bottom: 1px solid #dee2e6;
+    white-space: nowrap;
 }

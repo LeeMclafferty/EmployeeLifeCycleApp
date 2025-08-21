@@ -12,35 +12,109 @@ type Props = { personRecords: PersonRecord[]; filter?: string };
 const PersonRecordList = ({ personRecords, filter }: Props) => {
     const [filteredRecords, setFilteredRecords] =
         useState<PersonRecord[]>(personRecords);
+    const [sortConfig, setSortConfig] = useState<{
+        key: string;
+        direction: "asc" | "desc";
+    } | null>(null);
+
+    const columnOrder: (
+        | keyof PersonRecord
+        | "displayName"
+        | "department"
+        | "team"
+    )[] = [
+        "displayName",
+        "department",
+        "team",
+        "jobTitle",
+        "jobLevel",
+        "emailAddress",
+        "initials",
+        "phoneNumber",
+        "deskNumber",
+        "isFullyRemote",
+        "startDate",
+        "endDate",
+        "phase",
+    ];
 
     const filterPersonRecords = useCallback(() => {
-        if (!filter || filter.length === 0) {
-            setFilteredRecords(personRecords);
-        } else {
+        let results = personRecords;
+
+        if (filter && filter.length > 0) {
             const normalize = (s: string) =>
                 s.toLowerCase().replace(/\s+/g, "");
 
-            const buffer = personRecords.filter((record) =>
+            results = results.filter((record) =>
                 Object.entries(record).some(([key, value]) => {
                     if (value === null || value === undefined) return false;
 
                     let strValue = value.toString();
-
-                    if (key === "phase") {
+                    if (key === "phase")
                         strValue = formatPhase(value as number);
-                    }
-
-                    if (key.toLowerCase() === "isfullyremote") {
+                    if (key.toLowerCase() === "isfullyremote")
                         strValue = formatRemote(value as boolean);
-                    }
 
                     return normalize(strValue).includes(normalize(filter));
                 })
             );
-
-            setFilteredRecords(buffer);
         }
-    }, [personRecords, filter]);
+
+        // Apply sorting if sortConfig is set
+        if (sortConfig) {
+            results = [...results].sort((a, b) => {
+                let aVal: string | number = "";
+                let bVal: string | number = "";
+
+                switch (sortConfig.key) {
+                    case "displayName":
+                        aVal = getDisplayName(a);
+                        bVal = getDisplayName(b);
+                        break;
+                    case "department":
+                        aVal = a.department?.displayName ?? "";
+                        bVal = b.department?.displayName ?? "";
+                        break;
+                    case "team":
+                        aVal = a.team?.name ?? "";
+                        bVal = b.team?.name ?? "";
+                        break;
+                    case "phase":
+                        aVal = formatPhase(a.phase);
+                        bVal = formatPhase(b.phase);
+                        break;
+                    case "isFullyRemote":
+                        aVal = formatRemote(a.isFullyRemote);
+                        bVal = formatRemote(b.isFullyRemote);
+                        break;
+                    case "startDate":
+                    case "endDate":
+                        aVal = new Date(a[sortConfig.key] as string).getTime();
+                        bVal = new Date(b[sortConfig.key] as string).getTime();
+                        break;
+                    default:
+                        aVal = (
+                            a[sortConfig.key as keyof PersonRecord] ?? ""
+                        ).toString();
+                        bVal = (
+                            b[sortConfig.key as keyof PersonRecord] ?? ""
+                        ).toString();
+                }
+
+                if (typeof aVal === "number" && typeof bVal === "number") {
+                    return sortConfig.direction === "asc"
+                        ? aVal - bVal
+                        : bVal - aVal;
+                }
+
+                return sortConfig.direction === "asc"
+                    ? aVal.toString().localeCompare(bVal.toString())
+                    : bVal.toString().localeCompare(aVal.toString());
+            });
+        }
+
+        setFilteredRecords(results);
+    }, [personRecords, filter, sortConfig]);
 
     useEffect(() => {
         filterPersonRecords();
@@ -60,83 +134,74 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
         return date.toLocaleDateString("en-US"); // MM/DD/YYYY
     };
 
+    const renderSortableHeader = (key: string, label?: string) => (
+        <th
+            key={key}
+            onClick={() => {
+                setSortConfig((prev) => {
+                    if (prev && prev.key === key) {
+                        return {
+                            key,
+                            direction:
+                                prev.direction === "asc" ? "desc" : "asc",
+                        };
+                    }
+                    return { key, direction: "asc" };
+                });
+            }}
+            style={{ cursor: "pointer" }}
+        >
+            {label ?? formatHeader(key)}
+            {sortConfig?.key === key
+                ? sortConfig.direction === "asc"
+                    ? " ▲"
+                    : " ▼"
+                : null}
+        </th>
+    );
+
     return (
         <div className="card shadow-sm">
             {personRecords.length > 0 && (
                 <table className="table table-hover align-middle">
                     <thead className="table-light">
                         <tr>
-                            <th>Display Name</th>
-                            {/* Dynamically render other headers */}
-                            {Object.keys(personRecords[0])
-                                .filter(
-                                    (key) =>
-                                        ![
-                                            "id",
-                                            "departmentid",
-                                            "teamid",
-                                            "department",
-                                            "team",
-                                        ].includes(key.toLowerCase()) &&
-                                        !key.toLowerCase().includes("name")
-                                )
-
-                                .map((key) => (
-                                    <th key={key}>{formatHeader(key)}</th>
-                                ))}
-                            <th>Department</th>
-                            <th>Team</th>
+                            {columnOrder.map((key) =>
+                                renderSortableHeader(key, formatHeader(key))
+                            )}
                         </tr>
                     </thead>
+
                     <tbody>
                         {filteredRecords.map((person, i) => (
                             <tr key={i}>
-                                <td>
-                                    <a
-                                        href={`/Person/Read/${person.id}`}
-                                        className="text-primary fw-medium"
-                                    >
-                                        {getDisplayName(person)}
-                                    </a>
-                                </td>
-                                {Object.keys(person)
-                                    .filter(
-                                        (key) =>
-                                            ![
-                                                "id",
-                                                "departmentid",
-                                                "teamid",
-                                                "department",
-                                                "team",
-                                            ].includes(key.toLowerCase()) &&
-                                            !key.toLowerCase().includes("name")
-                                    )
-                                    .map((key) => (
-                                        <td key={key}>
-                                            {key === "startDate" ||
-                                            key === "endDate"
-                                                ? formatDate(
-                                                      person[
-                                                          key as keyof typeof person
-                                                      ] as string
-                                                  )
-                                                : key === "phase"
-                                                ? formatPhase(
-                                                      person[
-                                                          key as keyof typeof person
-                                                      ] as number
-                                                  )
-                                                : key === "isFullyRemote"
-                                                ? formatRemote(
-                                                      person.isFullyRemote
-                                                  )
-                                                : person[
-                                                      key as keyof typeof person
-                                                  ]?.toString()}
-                                        </td>
-                                    ))}
-                                <td>{person.department?.displayName ?? ""}</td>
-                                <td>{person.team?.name ?? ""}</td>
+                                {columnOrder.map((key) => (
+                                    <td key={key}>
+                                        {key === "displayName" ? (
+                                            <a
+                                                href={`/Person/Read/${person.id}`}
+                                                className="text-primary fw-medium"
+                                            >
+                                                {getDisplayName(person)}
+                                            </a>
+                                        ) : key === "department" ? (
+                                            person.department?.displayName ?? ""
+                                        ) : key === "team" ? (
+                                            person.team?.name ?? ""
+                                        ) : key === "phase" ? (
+                                            formatPhase(person.phase)
+                                        ) : key === "isFullyRemote" ? (
+                                            formatRemote(person.isFullyRemote)
+                                        ) : key === "startDate" ||
+                                          key === "endDate" ? (
+                                            formatDate(person[key] as string)
+                                        ) : (
+                                            person[
+                                                key as keyof PersonRecord
+                                            ]?.toString() ?? ""
+                                        )}
+                                    </td>
+                                ))}
                             </tr>
                         ))}
                     </tbody>
