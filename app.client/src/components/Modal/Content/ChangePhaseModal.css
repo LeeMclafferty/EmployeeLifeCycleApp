@@ -34,7 +34,13 @@
     gap: 1rem;
 }
 
-.label-container {
+.move-from-label-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.move-to-label-container {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -46,6 +52,11 @@
     justify-content: flex-end;
     gap: 0.5rem;
     white-space: nowrap;
+}
+
+.label-sep {
+    display: flex;
+    flex: 1;
 }
 
 #phase-select {

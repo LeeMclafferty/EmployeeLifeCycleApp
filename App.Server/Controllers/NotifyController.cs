@@ -15,15 +15,17 @@ namespace App.Server.Controllers
 
         public NotifyController(HttpClient http) => _http = http;
 
-        public record Payload(string MessageHtml);
+        public record Payload(string MessageHtml, string LifecyclePhase);
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Payload p)
         {
             if (string.IsNullOrWhiteSpace(p.MessageHtml))
                 return BadRequest("MessageHtml is required.");
+            if (string.IsNullOrWhiteSpace(p.LifecyclePhase))
+                return BadRequest("LifecyclePhase is required in payload.");
 
-            var body = JsonSerializer.Serialize(new { p.MessageHtml });
+            var body = JsonSerializer.Serialize(new { p.MessageHtml, p.LifecyclePhase });
             var content = new StringContent(body, Encoding.UTF8, "application/json");
 
             var resp = await _http.PostAsync(_flowUrl, content);

@@ -6,11 +6,8 @@ import {
 import { getDisplayName } from "../../../helpers/formattingHelpers";
 import "./ChangePhaseModal.css";
 import { updatePersonRecordPhase } from "../../../api/PersonRecordApi";
-import {
-    MICROSOFT_CHANNEL_ID,
-    MICROSOFT_TEAM_ID,
-} from "../../../constants/constants";
 import { sendTeamsNotification } from "../../../api/NoifyApi";
+import { type NotifyBody } from "../../../types/NotifyTypes";
 
 type Props = {
     personRecords: PersonRecord[];
@@ -19,21 +16,24 @@ type Props = {
 
 const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
     const [selectedRecords, setSelectedRecords] = useState<PersonRecord[]>([]);
-    const [selectedPhase, setSelectedPhase] = useState<LifeCyclePhase>(
-        LifeCyclePhase.Active
+    const [selectedToPhase, setSelectedToPhase] = useState<LifeCyclePhase>(
+        LifeCyclePhase.Onboarding
+    );
+    const [selectedFromPhase, setSelectedFromPhase] = useState<LifeCyclePhase>(
+        LifeCyclePhase.Draft
     );
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState<Record<number, string>>({});
     const [notes, setNotes] = useState<Record<number, string>>({});
 
     const displayRecords = useMemo(
-        () => personRecords.filter((r) => r.phase !== selectedPhase),
-        [personRecords, selectedPhase]
+        () => personRecords.filter((r) => r.phase === selectedFromPhase),
+        [personRecords, selectedFromPhase]
     );
 
     useEffect(() => {
         setSelectedRecords([]);
-    }, [selectedPhase]);
+    }, [selectedToPhase]);
 
     const toggleCheckbox = (p: PersonRecord) => {
         setSelectedRecords((prev) =>
@@ -46,17 +46,11 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
     const channelForPhase = (phase: LifeCyclePhase) => {
         switch (phase) {
             case LifeCyclePhase.Onboarding:
-                return {
-                    teamId: MICROSOFT_TEAM_ID,
-                    channelId: MICROSOFT_CHANNEL_ID.onboarding,
-                };
+                return "Onboarding";
             case LifeCyclePhase.Offboarded:
-                return {
-                    teamId: MICROSOFT_TEAM_ID,
-                    channelId: MICROSOFT_CHANNEL_ID.offboarding,
-                };
+                return "Offboarding";
             default:
-                return null;
+                return "";
         }
     };
 
@@ -70,7 +64,7 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
         recs: (PersonRecord & { id: number })[]
     ) => {
         const results = await Promise.allSettled(
-            recs.map((r) => updatePersonRecordPhase(r.id, selectedPhase))
+            recs.map((r) => updatePersonRecordPhase(r.id, selectedToPhase))
         );
 
         const errs: Record<number, string> = {};
@@ -102,7 +96,7 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
             const start = r.startDate
                 ? new Date(r.startDate).toLocaleDateString()
                 : "No Start Date";
-            const link = `<a href="https://yourapp.com/people/${r.id}">${name}</a>`;
+            const link = `<a href="https://localhost:49866/Task/${r.id}">${name}</a>`;
 
             let row = `<li>${dept} – ${link} ${start}`;
 
@@ -116,20 +110,23 @@ const ChangePhaseModal = ({ personRecords, onPhaseChangeComplete }: Props) => {
         });
 
         return `
-<b>New Team Member(s):</b>
-<ul>
-${rows.join("")}
-</ul>
-`;
+                <b>New Team Member(s):</b>
+                <ul>
+                ${rows.join("")}
+                </ul>`;
     };
 
     const notifyTeams = async (records: (PersonRecord & { id: number })[]) => {
-        const route = channelForPhase(selectedPhase);
-        if (!route || records.length === 0) return;
+        const lifecyclePhase = channelForPhase(selectedToPhase);
+        if (!lifecyclePhase || records.length === 0) return;
 
         const messageHtml = buildMessageHtml(records);
+        const body: NotifyBody = {
+            messageHtml,
+            lifecyclePhase,
+        };
         try {
-            await sendTeamsNotification({ messageHtml });
+            await sendTeamsNotification(body);
         } catch (e) {
             console.error("Teams notify failed:", e);
         }
@@ -159,14 +156,37 @@ ${rows.join("")}
     return (
         <>
             <div className="phase-changes">
-                <div className="lable-container">
+                <div className="move-from-label-container">
                     <label id="phase-select-label">
-                        Updated Phase:
+                        Moving From:
                         <select
                             id="phase-select"
-                            value={selectedPhase}
+                            value={selectedFromPhase}
                             onChange={(e) =>
-                                setSelectedPhase(
+                                setSelectedFromPhase(
+                                    Number(e.target.value) as LifeCyclePhase
+                                )
+                            }
+                        >
+                            {Object.values(LifeCyclePhase)
+                                .filter((v) => typeof v === "number")
+                                .map((v) => (
+                                    <option key={v} value={v}>
+                                        {LifeCyclePhase[v as number]}
+                                    </option>
+                                ))}
+                        </select>
+                    </label>
+                </div>
+                <div id="label-sep"></div>
+                <div className="move-to-label-container">
+                    <label id="phase-select-label">
+                        Moving To:
+                        <select
+                            id="phase-select"
+                            value={selectedToPhase}
+                            onChange={(e) =>
+                                setSelectedToPhase(
                                     Number(e.target.value) as LifeCyclePhase
                                 )
                             }
@@ -194,8 +214,8 @@ ${rows.join("")}
             <ul>
                 {displayRecords.length === 0 && (
                     <li>
-                        No people to change—everyone is already in{" "}
-                        {LifeCyclePhase[selectedPhase]}.
+                        No people to change—nobody is in{" "}
+                        {LifeCyclePhase[selectedFromPhase]}.
                     </li>
                 )}
                 {displayRecords.map((r) => (
