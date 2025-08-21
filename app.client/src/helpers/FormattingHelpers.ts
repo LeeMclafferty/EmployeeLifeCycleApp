@@ -31,3 +31,7 @@ export const formatPhase = (phase: number) => {
     const sPhase = LifeCyclePhase[phase];
     return sPhase;
 };
+
+export const formatRemote = (remote: boolean) => {
+    return remote ? "Remote" : "In Office";
+};

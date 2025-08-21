@@ -26,6 +26,7 @@ const DashboardPage = () => {
     const [completion, setCompletion] = useState(0);
     const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
     const [isPhaseChangeOpen, setIsPhaseChangeOpen] = useState<boolean>(false);
+    const [listFilter, setListFilter] = useState<string>("");
 
     const calculateOnboardingCompletion = async () => {
         try {
@@ -150,7 +151,16 @@ const DashboardPage = () => {
                             </button>
                         </div>
                     </div>
-                    <PersonRecordList personRecords={personRecords} />
+                    <div id="input-div">
+                        <input
+                            placeholder="Search"
+                            onChange={(e) => setListFilter(e.target.value)}
+                        ></input>
+                    </div>
+                    <PersonRecordList
+                        personRecords={personRecords}
+                        filter={listFilter}
+                    />
                 </div>
             </div>
 

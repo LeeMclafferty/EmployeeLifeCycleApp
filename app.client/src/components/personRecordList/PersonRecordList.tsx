@@ -1,10 +1,51 @@
 import { type PersonRecord } from "../../types/PersonRecordType";
-import { getDisplayName, formatPhase } from "../../helpers/formattingHelpers";
+import {
+    getDisplayName,
+    formatPhase,
+    formatRemote,
+} from "../../helpers/formattingHelpers";
 import "./PersonRecordList.css";
+import { useCallback, useEffect, useState } from "react";
 
-type Props = { personRecords: PersonRecord[] };
+type Props = { personRecords: PersonRecord[]; filter?: string };
 
-const PersonRecordList = ({ personRecords }: Props) => {
+const PersonRecordList = ({ personRecords, filter }: Props) => {
+    const [filteredRecords, setFilteredRecords] =
+        useState<PersonRecord[]>(personRecords);
+
+    const filterPersonRecords = useCallback(() => {
+        if (!filter || filter.length === 0) {
+            setFilteredRecords(personRecords);
+        } else {
+            const normalize = (s: string) =>
+                s.toLowerCase().replace(/\s+/g, "");
+
+            const buffer = personRecords.filter((record) =>
+                Object.entries(record).some(([key, value]) => {
+                    if (value === null || value === undefined) return false;
+
+                    let strValue = value.toString();
+
+                    if (key === "phase") {
+                        strValue = formatPhase(value as number);
+                    }
+
+                    if (key.toLowerCase() === "isfullyremote") {
+                        strValue = formatRemote(value as boolean);
+                    }
+
+                    return normalize(strValue).includes(normalize(filter));
+                })
+            );
+
+            setFilteredRecords(buffer);
+        }
+    }, [personRecords, filter]);
+
+    useEffect(() => {
+        filterPersonRecords();
+    }, [personRecords, filter, filterPersonRecords]);
+
     const formatHeader = (header: string) => {
         const spacedString = header.replace(/([a-z])([A-Z])/g, "$1 $2");
         const slicedFirstChar = spacedString.slice(1);
@@ -48,7 +89,7 @@ const PersonRecordList = ({ personRecords }: Props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {personRecords.map((person, i) => (
+                        {filteredRecords.map((person, i) => (
                             <tr key={i}>
                                 <td>
                                     <a
@@ -86,9 +127,9 @@ const PersonRecordList = ({ personRecords }: Props) => {
                                                       ] as number
                                                   )
                                                 : key === "isFullyRemote"
-                                                ? person.isFullyRemote
-                                                    ? "Remote"
-                                                    : "In Office"
+                                                ? formatRemote(
+                                                      person.isFullyRemote
+                                                  )
                                                 : person[
                                                       key as keyof typeof person
                                                   ]?.toString()}
