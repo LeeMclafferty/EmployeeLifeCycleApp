@@ -153,6 +153,7 @@ const DashboardPage = () => {
                     </div>
                     <div id="input-div">
                         <input
+                            id="list-search-input"
                             placeholder="Search"
                             onChange={(e) => setListFilter(e.target.value)}
                         ></input>

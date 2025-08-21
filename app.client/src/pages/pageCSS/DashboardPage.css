@@ -72,3 +72,20 @@
     color: #2563eb;
     border: 2px solid #2563eb;
 }
+
+#input-div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+}
+
+#list-search-input {
+    border: solid lightgray 1px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 10px;
+}
