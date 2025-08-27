@@ -11,6 +11,7 @@ import { getPersonRecords } from "../api/PersonRecordApi";
 import PieLegend from "../components/PieChart/PieLegend.tsx";
 import Modal from "../components/Modal/Modal.tsx";
 import ChangePhaseModal from "../components/Modal/Content/ChangePhaseModal.tsx";
+import { downloadExcel } from "../api/ExportApi.ts";
 
 // Pie chart: number of employees per status
 // Progress circle: % completion of current employees being onboarded.
@@ -73,6 +74,10 @@ const DashboardPage = () => {
 
     const closeModal = () => {
         setIsPhaseChangeOpen(false);
+    };
+
+    const exportExcelReport = () => {
+        downloadExcel();
     };
 
     return (
@@ -144,7 +149,11 @@ const DashboardPage = () => {
                                 <br />
                                 Phase
                             </button>
-                            <button className="card-btn" id="export-btn">
+                            <button
+                                className="card-btn"
+                                id="export-btn"
+                                onClick={() => exportExcelReport()}
+                            >
                                 Export
                                 <br />
                                 Data
