@@ -3,8 +3,12 @@ using App.Server.Data;
 using App.Server.Services;
 using Azure.Identity;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Graph;
+using Microsoft.Identity.Web;
 
 namespace App.Server
 {
@@ -44,6 +48,20 @@ namespace App.Server
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            // Authentication with Azure AD
+            builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+
+            builder.Services.AddControllers(options =>
+            {
+                // Require authenticated users globally
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
+
 
             // Allow list for CORS
             var allowedOrigins = new[] { "https://localhost:49866" };
