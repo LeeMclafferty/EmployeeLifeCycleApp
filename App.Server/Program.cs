@@ -16,22 +16,23 @@ namespace App.Server
     {
         public static void Main(string[] args)
         {
-            Env.Load(); // Load .env file if present
-            var tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
-                ?? throw new InvalidOperationException("TENANT_ID environment variable not set.");
-            var clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
-                ?? throw new InvalidOperationException("CLIENT_ID environment variable not set.");
-            var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
-                ?? throw new InvalidOperationException("CLIENT_SECRET environment variable not set.");
-
-            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+//             Env.Load(); // Load .env file if present
+//             var tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
+//                 ?? throw new InvalidOperationException("TENANT_ID environment variable not set.");
+//             var clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
+//                 ?? throw new InvalidOperationException("CLIENT_ID environment variable not set.");
+//             var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
+//                 ?? throw new InvalidOperationException("CLIENT_SECRET environment variable not set.");
+// 
+//             var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+// 
+// 
+//             // Register GraphServiceClient with DI
+//             builder.Services.AddSingleton(sp =>
+//                 new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" })
+//             );
 
             var builder = WebApplication.CreateBuilder(args);
-
-            // Register GraphServiceClient with DI
-            builder.Services.AddSingleton(sp =>
-                new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" })
-            );
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -49,13 +50,22 @@ namespace App.Server
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            // Authentication with Azure AD
-            builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+            Console.WriteLine("AzureAd:ClientId => " + builder.Configuration["AzureAd:ClientId"]);
+            Console.WriteLine("AzureAd:TenantId => " + builder.Configuration["AzureAd:TenantId"]);
+            Console.WriteLine("AzureAd:ClientSecret => " + (string.IsNullOrEmpty(builder.Configuration["AzureAd:ClientSecret"]) ? "(empty)" : "(loaded)"));
 
+            // Authentication with Azure AD
+            builder.Services.AddAuthentication("Bearer")
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+            builder.Services.AddAuthorization();
+
+
+            builder.Services.AddAuthorization();
+
+            // Require authenticated users globally to use api
             builder.Services.AddControllers(options =>
             {
-                // Require authenticated users globally
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
@@ -78,6 +88,10 @@ namespace App.Server
             builder.Services.AddScoped<PersonLifecycleService>();
 
             var app = builder.Build();
+
+            // Configure Azure AD authentication & authorization
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseCors("AllowPolicy");
             app.UseDefaultFiles();
