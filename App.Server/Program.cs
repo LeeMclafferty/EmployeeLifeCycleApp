@@ -1,5 +1,6 @@
 using App.Server.Controllers;
 using App.Server.Data;
+using App.Server.Middleware;
 using App.Server.Services;
 using Azure.Identity;
 using DotNetEnv;
@@ -91,6 +92,7 @@ namespace App.Server
 
             // Configure Azure AD authentication & authorization
             app.UseAuthentication();
+            app.UseMiddleware<UserProvisioningMiddleware>(); // ensure users are in UserRoles table
             app.UseAuthorization();
 
             app.UseCors("AllowPolicy");
@@ -104,7 +106,6 @@ namespace App.Server
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthorization();
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
 

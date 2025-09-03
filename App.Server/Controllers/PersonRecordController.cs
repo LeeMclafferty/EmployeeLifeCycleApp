@@ -1,4 +1,5 @@
-﻿using App.Server.Data;
+﻿using App.Server.Authorization;
+using App.Server.Data;
 using App.Server.Models;
 using App.Server.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ namespace App.Server.Controllers
             _personLifecycleService = personLifecycleService;
         }
 
+        [AuthorizeRole("Admin")]
         [HttpPost("Create")]
         public async Task<IActionResult> Create(PersonRecord personRecord)
         {
@@ -76,6 +78,7 @@ namespace App.Server.Controllers
             }
         }
 
+        [AuthorizeRole("Admin")]
         [HttpPut("Update")]
         public async Task<ActionResult> Update(PersonRecord personRecord)
         {
@@ -98,6 +101,7 @@ namespace App.Server.Controllers
             return Ok(personRecord);
         }
 
+        [AuthorizeRole("Admin")]
         [HttpPut("{id:int}/phase")]
         public async Task<IActionResult> UpdatePhase(int id, [FromBody] PhaseUpdateDto dto, CancellationToken ct)
         {

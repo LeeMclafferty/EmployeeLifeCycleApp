@@ -15,6 +15,7 @@ namespace App.Server.Data
         public DbSet<AssignedTask> AssignedTask { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

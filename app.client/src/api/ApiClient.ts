@@ -54,3 +54,21 @@ export const apiRequest = async <TResponse, TBody = undefined>(
     // Return JSON typed as TResponse
     return (await res.json()) as TResponse;
 };
+
+export const graphRequest = async (url: string): Promise<Blob> => {
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length === 0) throw new Error("No signed-in account");
+
+    const tokenResponse = await msalInstance.acquireTokenSilent({
+        scopes: ["User.Read"],
+        account: accounts[0],
+    });
+
+    const res = await fetch(`https://graph.microsoft.com/v1.0${url}`, {
+        headers: { Authorization: `Bearer ${tokenResponse.accessToken}` },
+    });
+
+    if (!res.ok) throw new Error(`Graph error: ${res.status}`);
+
+    return await res.blob();
+};

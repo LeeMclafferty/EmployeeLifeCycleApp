@@ -1,0 +1,64 @@
+.app-header {
+    display: flex;
+    align-items: center; /* vertically center ALL children */
+    padding: 0 30px; /* remove top/bottom padding */
+    height: 65px; /* fixed header height */
+    border-bottom: 1px solid #e5e5e5;
+    background: white;
+    font-family: Arial, sans-serif;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 18px;
+    margin-right: 40px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    padding-bottom: 4px;
+    position: relative;
+}
+
+.nav-links a.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 2px;
+}
+
+#outter-auth {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+#login-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+}
+
+#logout-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0; /* remove default button padding */
+    line-height: 1; /* prevent text from sitting low */
+    border: none; /* optional - cleaner look */
+}

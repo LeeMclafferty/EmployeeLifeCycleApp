@@ -1,7 +1,7 @@
 ﻿using App.Server.Data;
 using App.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient; // for unique-key detection
+using Microsoft.Data.SqlClient;
 using static App.Server.Models.PersonRecord;
 
 namespace App.Server.Services
