@@ -1,4 +1,5 @@
 ﻿using App.Server.Data;
+using App.Server.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -19,9 +20,7 @@ namespace App.Server.Authorization
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;
-            var email = user.FindFirst("preferred_username")?.Value
-                ?? user.FindFirst("upn")?.Value
-                ?? user.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+            var email = user.GetEmail();
 
             if (string.IsNullOrEmpty(email))
             {

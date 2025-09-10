@@ -1,5 +1,6 @@
 ﻿using App.Server.Authorization;
 using App.Server.Data;
+using App.Server.Extensions;
 using App.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,21 @@ namespace App.Server.Controllers
             var role = await _context.UserRoles.FindAsync(id);
             if (role == null) return NotFound();
             return role;
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUserRole()
+        {
+            var email = User.GetEmail(); 
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var userRole = await _context.UserRoles
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (userRole == null)
+                return NotFound();
+
+            return Ok(new { email = userRole.Email, role = userRole.Role });
         }
 
         // POST: api/UserRole

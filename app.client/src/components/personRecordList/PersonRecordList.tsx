@@ -6,6 +6,7 @@ import {
 } from "../../helpers/formattingHelpers";
 import "./PersonRecordList.css";
 import { useCallback, useEffect, useState } from "react";
+import { useUser } from "../../hooks/UseUser";
 
 type Props = { personRecords: PersonRecord[]; filter?: string };
 
@@ -16,6 +17,7 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
         key: string;
         direction: "asc" | "desc";
     } | null>(null);
+    const { role } = useUser();
 
     const columnOrder: (
         | keyof PersonRecord
@@ -41,13 +43,20 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
     const filterPersonRecords = useCallback(() => {
         let results = personRecords;
 
+        // role filter
+        if (role === "User") {
+            results = results.filter(
+                (r) => formatPhase(r.phase) === "Onboarding"
+            );
+        }
+
+        // text search filter
         if (filter && filter.length > 0) {
             const normalize = (s: string) =>
                 s.toLowerCase().replace(/\s+/g, "");
-
             results = results.filter((record) =>
                 Object.entries(record).some(([key, value]) => {
-                    if (value === null || value === undefined) return false;
+                    if (value == null) return false;
 
                     let strValue = value.toString();
                     if (key === "phase")
@@ -60,7 +69,7 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
             );
         }
 
-        // Apply sorting if sortConfig is set
+        // sorting
         if (sortConfig) {
             results = [...results].sort((a, b) => {
                 let aVal: string | number = "";
@@ -114,41 +123,37 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
         }
 
         setFilteredRecords(results);
-    }, [personRecords, filter, sortConfig]);
+    }, [personRecords, filter, sortConfig, role]);
 
     useEffect(() => {
         filterPersonRecords();
-    }, [personRecords, filter, filterPersonRecords]);
+    }, [filterPersonRecords]);
 
     const formatHeader = (header: string) => {
         const spacedString = header.replace(/([a-z])([A-Z])/g, "$1 $2");
-        const slicedFirstChar = spacedString.slice(1);
-        const firstChar = spacedString.charAt(0).toUpperCase();
-
-        return firstChar + slicedFirstChar;
+        return spacedString.charAt(0).toUpperCase() + spacedString.slice(1);
     };
 
     const formatDate = (dateString: string) => {
         if (!dateString) return "";
         const date = new Date(dateString);
-        return date.toLocaleDateString("en-US"); // MM/DD/YYYY
+        return date.toLocaleDateString("en-US");
     };
 
     const renderSortableHeader = (key: string, label?: string) => (
         <th
             key={key}
-            onClick={() => {
-                setSortConfig((prev) => {
-                    if (prev && prev.key === key) {
-                        return {
-                            key,
-                            direction:
-                                prev.direction === "asc" ? "desc" : "asc",
-                        };
-                    }
-                    return { key, direction: "asc" };
-                });
-            }}
+            onClick={() =>
+                setSortConfig((prev) =>
+                    prev && prev.key === key
+                        ? {
+                              key,
+                              direction:
+                                  prev.direction === "asc" ? "desc" : "asc",
+                          }
+                        : { key, direction: "asc" }
+                )
+            }
             style={{ cursor: "pointer" }}
         >
             {label ?? formatHeader(key)}
@@ -162,7 +167,7 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
 
     return (
         <div className="card shadow-sm">
-            {personRecords.length > 0 && (
+            {filteredRecords.length > 0 && (
                 <table className="table table-hover align-middle">
                     <thead className="table-light">
                         <tr>
@@ -171,7 +176,6 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
                             )}
                         </tr>
                     </thead>
-
                     <tbody>
                         {filteredRecords.map((person, i) => (
                             <tr key={i}>

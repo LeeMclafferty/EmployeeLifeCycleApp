@@ -9,36 +9,42 @@ import TaskPage from "./pages/TaskPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import CreateTaskPage from "./pages/CreateTaskPage";
 import { AuthGuard } from "./authGuard";
+import { UserProvider } from "./context/UserProvider";
 
 const App = () => {
     return (
-        <AuthGuard>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<MainLayout />}>
-                        <Route index element={<DashboardPage />} />
-                        <Route
-                            path="Person/Create"
-                            element={<AddPersonPage />}
-                        />
-                        <Route
-                            path="Person/Edit/:personId"
-                            element={<EditPersonPage />}
-                        />
-                        <Route
-                            path="Person/Read/:personId"
-                            element={<ViewPersonPage />}
-                        />
-                        <Route path="Task/:personId" element={<TaskPage />} />
-                        <Route
-                            path="Task/Create"
-                            element={<CreateTaskPage />}
-                        />
-                        <Route path="*" element={<NotFoundPage />} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </AuthGuard>
+        <UserProvider>
+            <AuthGuard>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<MainLayout />}>
+                            <Route index element={<DashboardPage />} />
+                            <Route
+                                path="Person/Create"
+                                element={<AddPersonPage />}
+                            />
+                            <Route
+                                path="Person/Edit/:personId"
+                                element={<EditPersonPage />}
+                            />
+                            <Route
+                                path="Person/Read/:personId"
+                                element={<ViewPersonPage />}
+                            />
+                            <Route
+                                path="Task/:personId"
+                                element={<TaskPage />}
+                            />
+                            <Route
+                                path="Task/Create"
+                                element={<CreateTaskPage />}
+                            />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </AuthGuard>
+        </UserProvider>
     );
 };
 

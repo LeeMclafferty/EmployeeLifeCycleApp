@@ -7,9 +7,11 @@ import {
 import { useEffect, useState } from "react";
 import "./Header.css";
 import LoginLogoutBtn from "./LoginLogoutBtn";
+import { useUser } from "../../hooks/UseUser";
 
 const Header = () => {
     const [firstId, setFirstId] = useState<number | null>(null);
+    const { role, email, loading } = useUser();
 
     useEffect(() => {
         const loadId = async () => {
@@ -36,7 +38,9 @@ const Header = () => {
             <div className="logo">Employee Life Cycle</div>
             <nav className="nav-links">
                 <NavLink to="/">Dashboard</NavLink>
-                <NavLink to="Person/Create">New Employee</NavLink>
+                {role === "Admin" && (
+                    <NavLink to="Person/Create">New Employee</NavLink>
+                )}
                 <NavLink to={`/Task/${firstId}`}>Tasks</NavLink>
                 <NavLink to="Task/Create">New Task</NavLink>
                 <NavLink to="/Settings">Settings</NavLink>
