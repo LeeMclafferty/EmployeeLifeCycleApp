@@ -20,7 +20,7 @@ namespace App.Server.Controllers
             _personLifecycleService = personLifecycleService;
         }
 
-        [AuthorizeRole("Admin")]
+        [AuthorizeRole("OnboardingAdmin", "SuperAdmin")]
         [HttpPost("Create")]
         public async Task<IActionResult> Create(PersonRecord personRecord)
         {
@@ -78,7 +78,7 @@ namespace App.Server.Controllers
             }
         }
 
-        [AuthorizeRole("Admin")]
+        [AuthorizeRole("OnboardingAdmin", "SuperAdmin")]
         [HttpPut("Update")]
         public async Task<ActionResult> Update(PersonRecord personRecord)
         {
@@ -101,7 +101,7 @@ namespace App.Server.Controllers
             return Ok(personRecord);
         }
 
-        [AuthorizeRole("Admin")]
+        [AuthorizeRole("OnboardingAdmin", "SuperAdmin", "OffboardingAdmin")]
         [HttpPut("{id:int}/phase")]
         public async Task<IActionResult> UpdatePhase(int id, [FromBody] PhaseUpdateDto dto, CancellationToken ct)
         {

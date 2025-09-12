@@ -12,6 +12,7 @@ import PieLegend from "../components/PieChart/PieLegend.tsx";
 import Modal from "../components/Modal/Modal.tsx";
 import ChangePhaseModal from "../components/Modal/Content/ChangePhaseModal.tsx";
 import { downloadExcel } from "../api/ExportApi.ts";
+import { useUser } from "../hooks/UseUser.ts";
 
 // Pie chart: number of employees per status
 // Progress circle: % completion of current employees being onboarded.
@@ -28,6 +29,19 @@ const DashboardPage = () => {
     const [personRecords, setPersonRecords] = useState<PersonRecord[]>([]);
     const [isPhaseChangeOpen, setIsPhaseChangeOpen] = useState<boolean>(false);
     const [listFilter, setListFilter] = useState<string>("");
+    const { hasRole } = useUser();
+
+    const canChangePhase = hasRole([
+        "OnboardingAdmin",
+        "OffboardingAdmin",
+        "SuperAdmin",
+    ]);
+
+    const canExport = hasRole([
+        "OnboardingAdmin",
+        "OffboardingAdmin",
+        "SuperAdmin",
+    ]);
 
     const calculateOnboardingCompletion = async () => {
         try {
@@ -141,8 +155,18 @@ const DashboardPage = () => {
                         </div>
                         <div className="card graph-card btn-card">
                             <button
-                                className="card-btn"
-                                id="phase-btn"
+                                className={"card-btn"}
+                                disabled={!canChangePhase}
+                                id={
+                                    canChangePhase
+                                        ? "phase-btn"
+                                        : "phase-btn-disabled"
+                                }
+                                title={
+                                    !canChangePhase
+                                        ? "Changing Phases is disabled for your role."
+                                        : undefined
+                                }
                                 onClick={() => setIsPhaseChangeOpen(true)}
                             >
                                 Change
@@ -151,7 +175,17 @@ const DashboardPage = () => {
                             </button>
                             <button
                                 className="card-btn"
-                                id="export-btn"
+                                disabled={!canExport}
+                                id={
+                                    canExport
+                                        ? "export-btn"
+                                        : "export-btn-disabled"
+                                }
+                                title={
+                                    !canExport
+                                        ? "Exporting is disabled for your role."
+                                        : undefined
+                                }
                                 onClick={() => exportExcelReport()}
                             >
                                 Export

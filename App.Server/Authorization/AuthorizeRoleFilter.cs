@@ -8,35 +8,35 @@ namespace App.Server.Authorization
 {
     public class AuthorizeRoleFilter : IAsyncAuthorizationFilter
     {
-        private readonly string _role;
+        private readonly string[] _roles;
         private readonly AppDbContext _context;
 
-        public AuthorizeRoleFilter(string role, AppDbContext context)
+        public AuthorizeRoleFilter(string[] roles, AppDbContext context)
         {
-            _role = role;
+            _roles = roles;
             _context = context;
         }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var user = context.HttpContext.User;
-            var email = user.GetEmail();
-
+            var email = context.HttpContext.User.GetEmail();
             if (string.IsNullOrEmpty(email))
             {
                 context.Result = new ForbidResult();
                 return;
             }
 
-            var role = await _context.UserRoles
+            var userRoles = await _context.UserRoles
                 .Where(u => u.Email == email)
                 .Select(u => u.Role)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (role != _role)
+            // ✅ Pass if the user has ANY of the allowed roles
+            if (!_roles.Any(r => userRoles.Contains(r)))
             {
                 context.Result = new ForbidResult();
             }
         }
     }
+
 }

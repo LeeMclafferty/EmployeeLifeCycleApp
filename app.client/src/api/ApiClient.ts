@@ -72,3 +72,30 @@ export const graphRequest = async (url: string): Promise<Blob> => {
 
     return await res.blob();
 };
+
+export const apiRequestBlob = async (
+    path: string,
+    method: "GET" | "POST" = "GET"
+) => {
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length === 0) throw new Error("No signed-in account");
+
+    const tokenResponse = await msalInstance.acquireTokenSilent({
+        ...loginRequest,
+        account: accounts[0],
+    });
+
+    const res = await fetch(`${API_BASE_URL}/${path}`, {
+        method,
+        headers: {
+            Authorization: `Bearer ${tokenResponse.accessToken}`,
+        },
+    });
+
+    if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || `Request failed with status ${res.status}`);
+    }
+
+    return await res.blob();
+};

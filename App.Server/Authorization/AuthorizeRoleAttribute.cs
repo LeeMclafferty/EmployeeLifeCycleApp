@@ -4,9 +4,10 @@ namespace App.Server.Authorization
 {
     public class AuthorizeRoleAttribute : TypeFilterAttribute
     {
-        public AuthorizeRoleAttribute(string role) : base(typeof(AuthorizeRoleFilter))
+        public AuthorizeRoleAttribute(params string[] roles) : base(typeof(AuthorizeRoleFilter))
         {
-            Arguments = new object[] { role };
+            Arguments = new object[] { roles };
         }
     }
+
 }

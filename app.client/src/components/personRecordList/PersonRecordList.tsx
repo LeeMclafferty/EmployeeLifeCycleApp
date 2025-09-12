@@ -147,7 +147,7 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
         }
 
         setFilteredRecords(results);
-    }, [personRecords, filter, sortConfig, hasRole, isSuperAdmin]);
+    }, [personRecords, filter, sortConfig, roles]);
 
     useEffect(() => {
         filterPersonRecords();
@@ -207,7 +207,15 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
                                     <td key={key}>
                                         {key === "displayName" ? (
                                             <a
-                                                href={`/Person/Read/${person.id}`}
+                                                href={
+                                                    hasRole([
+                                                        "OnboardingAdmin",
+                                                        "OffboardingAdmin",
+                                                        "SuperAdmin",
+                                                    ])
+                                                        ? `/Person/Read/${person.id}`
+                                                        : `Task/${person.id}`
+                                                }
                                                 className="text-primary fw-medium"
                                             >
                                                 {getDisplayName(person)}
