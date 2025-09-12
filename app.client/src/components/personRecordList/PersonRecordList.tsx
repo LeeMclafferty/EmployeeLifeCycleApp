@@ -13,11 +13,13 @@ type Props = { personRecords: PersonRecord[]; filter?: string };
 const PersonRecordList = ({ personRecords, filter }: Props) => {
     const [filteredRecords, setFilteredRecords] =
         useState<PersonRecord[]>(personRecords);
+
     const [sortConfig, setSortConfig] = useState<{
         key: string;
         direction: "asc" | "desc";
     } | null>(null);
-    const { role } = useUser();
+
+    const { roles, isSuperAdmin, hasRole } = useUser();
 
     const columnOrder: (
         | keyof PersonRecord
@@ -44,10 +46,32 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
         let results = personRecords;
 
         // role filter
-        if (role === "User") {
-            results = results.filter(
-                (r) => formatPhase(r.phase) === "Onboarding"
-            );
+        if (!isSuperAdmin) {
+            const allowed: string[] = [];
+
+            if (hasRole(["OffboardingUser"])) {
+                allowed.push("Offboarded");
+            }
+
+            if (hasRole(["OnboardingUser"])) {
+                allowed.push("Onboarding");
+            }
+
+            if (hasRole(["OnboardingAdmin"])) {
+                // all except offboarded
+                allowed.push("Active", "Onboarding", "Draft");
+            }
+
+            if (hasRole(["OffboardingAdmin"])) {
+                allowed.push("Active", "Offboarded");
+            }
+
+            results = results =
+                allowed.length > 0
+                    ? results.filter((r) =>
+                          allowed.includes(formatPhase(r.phase))
+                      )
+                    : [];
         }
 
         // text search filter
@@ -123,7 +147,7 @@ const PersonRecordList = ({ personRecords, filter }: Props) => {
         }
 
         setFilteredRecords(results);
-    }, [personRecords, filter, sortConfig, role]);
+    }, [personRecords, filter, sortConfig, hasRole, isSuperAdmin]);
 
     useEffect(() => {
         filterPersonRecords();

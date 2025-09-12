@@ -11,7 +11,7 @@ import { useUser } from "../../hooks/UseUser";
 
 const Header = () => {
     const [firstId, setFirstId] = useState<number | null>(null);
-    const { role, email, loading } = useUser();
+    const { roles, isSuperAdmin, hasRole } = useUser();
 
     useEffect(() => {
         const loadId = async () => {
@@ -38,7 +38,7 @@ const Header = () => {
             <div className="logo">Employee Life Cycle</div>
             <nav className="nav-links">
                 <NavLink to="/">Dashboard</NavLink>
-                {role === "Admin" && (
+                {hasRole(["OnboardingAdmin", "SuperAdmin"]) && (
                     <NavLink to="Person/Create">New Employee</NavLink>
                 )}
                 <NavLink to={`/Task/${firstId}`}>Tasks</NavLink>

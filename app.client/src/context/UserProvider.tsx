@@ -4,7 +4,7 @@ import { getCurrentUserRole, type MeResponse } from "../api/UserApi";
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [state, setState] = useState<UserContextType>({
-        role: "User",
+        roles: [],
         email: null,
         loading: true,
     });
@@ -12,11 +12,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         getCurrentUserRole()
             .then((res: MeResponse) =>
-                setState({ role: res.role, email: res.email, loading: false })
+                setState({ roles: res.roles, email: res.email, loading: false })
             )
-            .catch(() =>
-                setState({ role: "User", email: null, loading: false })
-            );
+            .catch(() => setState({ roles: [], email: null, loading: false }));
     }, []);
 
     return (

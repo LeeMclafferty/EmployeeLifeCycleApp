@@ -37,16 +37,18 @@ namespace App.Server.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> GetCurrentUserRole()
         {
-            var email = User.GetEmail(); 
+            var email = User.GetEmail();
             if (string.IsNullOrEmpty(email)) return Unauthorized();
 
-            var userRole = await _context.UserRoles
-                .FirstOrDefaultAsync(u => u.Email == email);
+            var roles = await _context.UserRoles
+                .Where(u => u.Email == email)
+                .Select(u => u.Role)
+                .ToListAsync();
 
-            if (userRole == null)
+            if (!roles.Any())
                 return NotFound();
 
-            return Ok(new { email = userRole.Email, role = userRole.Role });
+            return Ok(new { email, roles });
         }
 
         // POST: api/UserRole
