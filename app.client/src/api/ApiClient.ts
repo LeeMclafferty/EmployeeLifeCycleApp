@@ -22,7 +22,6 @@ export const apiRequest = async <TResponse, TBody = undefined>(
     method: HttpMethod = "GET",
     body?: TBody
 ): Promise<TResponse> => {
-    // Ensure a signed-in account is available
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length === 0) {
         throw new Error(
@@ -30,13 +29,11 @@ export const apiRequest = async <TResponse, TBody = undefined>(
         );
     }
 
-    // Acquire a token silently
     const tokenResponse = await msalInstance.acquireTokenSilent({
         ...loginRequest,
         account: accounts[0],
     });
 
-    // Call backend with Bearer token
     const res = await fetch(`${API_BASE_URL}/${path}`, {
         method,
         headers: {
@@ -51,8 +48,13 @@ export const apiRequest = async <TResponse, TBody = undefined>(
         throw new Error(errMsg || `Request failed with status ${res.status}`);
     }
 
-    // Return JSON typed as TResponse
-    return (await res.json()) as TResponse;
+    // Handle empty responses (204 No Content, etc.)
+    if (res.status === 204) {
+        return undefined as TResponse;
+    }
+
+    const text = await res.text();
+    return text ? (JSON.parse(text) as TResponse) : (undefined as TResponse);
 };
 
 export const graphRequest = async (url: string): Promise<Blob> => {

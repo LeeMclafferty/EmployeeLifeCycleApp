@@ -1,0 +1,62 @@
+/* Container inside modal */
+.edit-roles-container {
+    padding: 24px;
+    text-align: center;
+}
+
+/* Title */
+.edit-roles-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Role list */
+.role-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 auto 20px auto;
+    width: fit-content;
+}
+
+.role-list label {
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Buttons row */
+.role-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.role-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.role-actions .save-btn {
+    background: #2563eb;
+    color: white;
+}
+.role-actions .save-btn:hover {
+    background: #1d4ed8;
+}
+
+.role-actions .close-btn {
+    background: #e0e0e0;
+    color: #333;
+}
+.role-actions .close-btn:hover {
+    background: #d6d6d6;
+}

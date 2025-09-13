@@ -1,0 +1,76 @@
+.role-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 2px;
+    border-radius: 9999px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #333; /* dark text for contrast */
+}
+
+/* Pastel role colors */
+.role-pill.onboardinguser {
+    background-color: #72a9fc;
+} /* light blue */
+.role-pill.offboardinguser {
+    background-color: #91f96f;
+} /* light green */
+.role-pill.onboardingadmin {
+    background-color: #fbd07f;
+} /* light orange */
+.role-pill.offboardingadmin {
+    background-color: #f78c95;
+} /* light red/pink */
+.role-pill.superadmin {
+    background-color: #c09cfa;
+} /* light purple */
+
+.role-edit-pill {
+    background-color: #e0e0e0;
+    color: #333;
+    cursor: pointer;
+}
+.role-edit-pill:hover {
+    background-color: white;
+    border: 1px solid gray;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    font-family: Arial, sans-serif;
+}
+
+thead {
+    background-color: #f9fafb; /* light gray */
+    border-bottom: 2px solid #e5e7eb;
+}
+
+th,
+td {
+    padding: 10px 14px;
+    text-align: left;
+}
+
+th {
+    font-weight: 600;
+    color: #374151; /* darker gray */
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:hover {
+    background-color: #f3f4f6; /* light hover */
+}
+
+td {
+    vertical-align: middle;
+    color: #111827; /* near-black for readability */
+}

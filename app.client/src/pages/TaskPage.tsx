@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import TaskList from "../components/Tasks/TaskList";
 import { type PersonRecord } from "../types/PersonRecordType";
-import { getPersonRecordById } from "../api/PersonRecordApi";
 import { useParams } from "react-router-dom";
 import "./pageCSS/pages.css";
+import { getPersonRecordById } from "../api/PersonRecordApi";
 
 const TaskPage = () => {
     const { personId } = useParams();

@@ -10,6 +10,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import CreateTaskPage from "./pages/CreateTaskPage";
 import { AuthGuard } from "./authGuard";
 import { UserProvider } from "./context/UserProvider";
+import SettingsPage from "./pages/SettingsPage";
 
 const App = () => {
     return (
@@ -39,6 +40,7 @@ const App = () => {
                                 path="Task/Create"
                                 element={<CreateTaskPage />}
                             />
+                            <Route path="Settings" element={<SettingsPage />} />
                             <Route path="*" element={<NotFoundPage />} />
                         </Route>
                     </Routes>

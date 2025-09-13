@@ -18,8 +18,8 @@ namespace App.Server.Controllers
             _context = context;
         }
 
-        // GET: api/UserRole
-        [HttpGet]
+        // GET: api/UserRole/Roles
+        [HttpGet("Roles")]
         public async Task<ActionResult<IEnumerable<UserRole>>> GetUserRoles()
         {
             return await _context.UserRoles.ToListAsync();
@@ -52,7 +52,7 @@ namespace App.Server.Controllers
         }
 
         // POST: api/UserRole
-        [AuthorizeRole("Admin")]
+        [AuthorizeRole("SuperAdmin")]
         [HttpPost]
         public async Task<ActionResult<UserRole>> PostUserRole(UserRole userRole)
         {
@@ -62,7 +62,7 @@ namespace App.Server.Controllers
         }
 
         // PUT: api/UserRole/{id}
-        [AuthorizeRole("Admin")]
+        [AuthorizeRole("SuperAdmin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserRole(int id, UserRole userRole)
         {
@@ -75,18 +75,20 @@ namespace App.Server.Controllers
         }
 
         // DELETE: api/UserRole/{id}
-        [AuthorizeRole("Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserRole(int id)
+        [AuthorizeRole("SuperAdmin")]
+        [HttpDelete("{email}/{role}")]
+        public async Task<IActionResult> DeleteUserRole(string email, string role)
         {
-            var role = await _context.UserRoles.FindAsync(id);
-            if (role == null) return NotFound();
+            var entry = await _context.UserRoles
+                .FirstOrDefaultAsync(u => u.Email == email && u.Role == role);
 
-            _context.UserRoles.Remove(role);
+            if (entry == null) return NotFound();
+
+            _context.UserRoles.Remove(entry);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
+
     }
 
 }
