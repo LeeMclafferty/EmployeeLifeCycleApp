@@ -114,7 +114,7 @@ const EditPersonRecordForm = ({ person }: Props) => {
                 )?.value;
                 return raw === "" ? null : Number(raw);
             })(),
-            phase: person.phase, // need to finsih this so I can update the phase from this page.
+            phase: person.phase,
         };
 
         return formPerson;

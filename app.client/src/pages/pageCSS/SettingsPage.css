@@ -1,0 +1,12 @@
+.settings-section {
+    height: 400px; /* pick your value */
+    overflow-y: scroll; /* always show vertical scrollbar */
+    border: 1px solid #ddd;
+}
+
+.section-break {
+    border-bottom: 2px solid rgb(131, 129, 135);
+    width: 100%;
+    margin: 50px 0px 20px 0px;
+    text-align: start;
+}
