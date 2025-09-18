@@ -30,10 +30,32 @@ namespace App.Server.Controllers
                 return BadRequest(message);
             }
 
+            // Attach Department if provided
+            if (personRecord.DepartmentId.HasValue)
+            {
+                personRecord.Department = await _context.Departments
+                    .FindAsync(personRecord.DepartmentId);
+            }
+
+            // Attach Team if provided
+            if (personRecord.TeamId.HasValue)
+            {
+                personRecord.Team = await _context.Teams
+                    .FindAsync(personRecord.TeamId);
+            }
+
             _context.PersonRecords.Add(personRecord);
             await _context.SaveChangesAsync();
-            return Ok(personRecord);
+
+            // Return full object with navigation properties
+            var created = await _context.PersonRecords
+                .Include(p => p.Department)
+                .Include(p => p.Team)
+                .FirstOrDefaultAsync(p => p.Id == personRecord.Id);
+
+            return Ok(created);
         }
+
 
         [HttpGet("Get")]
         public async Task<ActionResult<List<PersonRecord>>> GetAll()
@@ -82,24 +104,47 @@ namespace App.Server.Controllers
         [HttpPut("Update")]
         public async Task<ActionResult> Update(PersonRecord personRecord)
         {
-            string message = string.Empty;
             if (!ModelState.IsValid)
             {
-                foreach (var entry in ModelState)
-                {
-                    message += (entry.Key + ", ");
-                }
-                message += "keys not valid.";
+                var message = string.Join(", ", ModelState.Keys) + " keys not valid.";
                 return BadRequest(message);
             }
 
-            var existing = await _context.PersonRecords.FindAsync(personRecord.Id);
+            var existing = await _context.PersonRecords
+                .Include(p => p.Department)
+                .Include(p => p.Team)
+                .FirstOrDefaultAsync(p => p.Id == personRecord.Id);
+
             if (existing == null) return NotFound(new { message = "Person not found" });
 
+            // Update scalar properties
             _context.Entry(existing).CurrentValues.SetValues(personRecord);
+
+            // Handle relationships explicitly
+            if (personRecord.DepartmentId != existing.DepartmentId)
+            {
+                existing.DepartmentId = personRecord.DepartmentId;
+                existing.Department = await _context.Departments
+                    .FindAsync(personRecord.DepartmentId);
+            }
+
+            if (personRecord.TeamId != existing.TeamId)
+            {
+                existing.TeamId = personRecord.TeamId;
+                existing.Team = await _context.Teams.FindAsync(personRecord.TeamId);
+            }
+
             await _context.SaveChangesAsync();
-            return Ok(personRecord);
+
+            // Reload with navigation properties
+            var updated = await _context.PersonRecords
+                .Include(p => p.Department)
+                .Include(p => p.Team)
+                .FirstOrDefaultAsync(p => p.Id == personRecord.Id);
+
+            return Ok(updated);
         }
+
 
         [AuthorizeRole("OnboardingAdmin", "SuperAdmin", "OffboardingAdmin")]
         [HttpPut("{id:int}/phase")]

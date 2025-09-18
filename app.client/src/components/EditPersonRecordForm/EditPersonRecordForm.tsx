@@ -183,7 +183,8 @@ const EditPersonRecordForm = ({ person }: Props) => {
                                 />
                             </div>
                         </div>
-                        {/* Second Row: Preferred Name + Initials */}
+
+                        {/* Preferred Name + Initials */}
                         <div className="row mb-3">
                             <div className="col-md-6">
                                 <label className="form-label">
@@ -206,7 +207,110 @@ const EditPersonRecordForm = ({ person }: Props) => {
                                 />
                             </div>
                         </div>
-                        {/* Other fields... keep each in a full-width row */}
+
+                        {/* Dates */}
+                        <div className="row g-4 mb-4">
+                            <div className="col-md-4">
+                                <label className="form-label">Start Date</label>
+                                <input
+                                    type="date"
+                                    name="StartDate"
+                                    defaultValue={
+                                        person.startDate
+                                            ? person.startDate.split("T")[0]
+                                            : ""
+                                    }
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="col-md-4">
+                                <label className="form-label">End Date</label>
+                                <input
+                                    type="date"
+                                    name="EndDate"
+                                    defaultValue={
+                                        person.endDate
+                                            ? person.endDate.split("T")[0]
+                                            : ""
+                                    }
+                                    className="form-control"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Contact info */}
+                        <div className="row g-4 mb-4">
+                            <div className="col-md-6">
+                                <label className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    name="EmailAddress"
+                                    defaultValue={person.emailAddress || ""}
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label className="form-label">
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="text"
+                                    name="PhoneNumber"
+                                    defaultValue={person.phoneNumber || ""}
+                                    className="form-control"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Job info */}
+                        <div className="row g-4 mb-4">
+                            <div className="col-md-6">
+                                <label className="form-label">Job Title</label>
+                                <input
+                                    type="text"
+                                    name="JobTitle"
+                                    defaultValue={person.jobTitle || ""}
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label className="form-label">Job Level</label>
+                                <input
+                                    type="text"
+                                    name="JobLevel"
+                                    defaultValue={person.jobLevel || ""}
+                                    className="form-control"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Desk + Remote */}
+                        <div className="row g-4 mb-4">
+                            <div className="col-md-6">
+                                <label className="form-label">
+                                    Desk Number
+                                </label>
+                                <input
+                                    type="number"
+                                    name="DeskNumber"
+                                    defaultValue={person.deskNumber ?? ""}
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="col-md-6 d-flex align-items-center">
+                                <div className="form-check">
+                                    <input
+                                        type="checkbox"
+                                        name="FullyRemote"
+                                        className="form-check-input"
+                                        defaultChecked={person.isFullyRemote}
+                                    />
+                                    <label className="form-check-label">
+                                        Fully Remote
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div className="row g-4 mb-4">
                             <div className="col-md-4">
                                 <label className="form-label">Start Date</label>
